@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Results - Claude Code Quiz{% endblock %}
+
+{% block content %}
+<h1>Quiz Complete! {{ performance }}</h1>
+
+<div class="stats-grid" style="margin: 30px 0;">
+    <div class="stat-card">
+        <div class="stat-value">{{ score }}</div>
+        <div class="stat-label">Correct Answers</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total Questions</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" style="color: {% if percentage >= 70 %}#4caf50{% elif percentage >= 50 %}#ff9800{% else %}#f44336{% endif %};">
+            {{ percentage }}%
+        </div>
+        <div class="stat-label">Score</div>
+    </div>
+</div>
+
+<div class="question-box" style="text-align: center;">
+    <h2>{{ message }}</h2>
+</div>
+
+<h2 style="margin-top: 40px; margin-bottom: 20px;">Topic Breakdown</h2>
+<div class="stats-grid">
+    {% for topic, stats in topic_stats.items() %}
+    <div class="stat-card">
+        <div class="stat-value" style="font-size: 1.5em;">
+            {{ stats.correct }} / {{ stats.total }}
+        </div>
+        <div class="stat-label">{{ topic }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<h2 style="margin-top: 40px; margin-bottom: 20px;">Review Your Answers</h2>
+{% for answer in answers %}
+<div class="answer-review {% if answer.is_correct %}correct{% else %}incorrect{% endif %}">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+        <span class="topic-badge" style="margin: 0;">{{ answer.topic }}</span>
+        <span style="font-weight: bold; color: {% if answer.is_correct %}#4caf50{% else %}#f44336{% endif %};">
+            {% if answer.is_correct %}✓ Correct{% else %}✗ Incorrect{% endif %}
+        </span>
+    </div>
+
+    <h3 style="color: #333; margin-bottom: 15px;">{{ answer.question }}</h3>
+
+    <div style="margin-bottom: 10px;">
+        <strong>Your answer:</strong>
+        <div style="padding: 10px; background: white; border-radius: 5px; margin-top: 5px;">
+            {{ answer.options[answer.selected] }}
+        </div>
+    </div>
+
+    {% if not answer.is_correct %}
+    <div style="margin-bottom: 10px;">
+        <strong style="color: #4caf50;">Correct answer:</strong>
+        <div style="padding: 10px; background: #e8f5e9; border-radius: 5px; margin-top: 5px;">
+            {{ answer.options[answer.correct] }}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="explanation">
+        <strong>💡 Explanation:</strong> {{ answer.explanation }}
+    </div>
+</div>
+{% endfor %}
+
+<div style="text-align: center; margin-top: 40px;">
+    <a href="/" class="btn" style="font-size: 1.2em;">
+        Take Quiz Again 🔄
+    </a>
+</div>
+{% endblock %}

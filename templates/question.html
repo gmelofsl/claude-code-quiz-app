@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Question {{ question_num }} - Claude Code Quiz{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1 style="margin: 0;">Question {{ question_num }}</h1>
+    <span style="color: #666; font-size: 1.1em;">{{ question_num }} / {{ total_questions }}</span>
+</div>
+
+<div class="progress-bar">
+    <div class="progress-fill" style="width: {{ progress }}%;"></div>
+</div>
+
+<span class="topic-badge">{{ question.topic }}</span>
+
+<div class="question-box">
+    <h2 style="line-height: 1.5;">{{ question.question }}</h2>
+</div>
+
+<form method="POST" action="/submit" id="quiz-form">
+    {% for option in question.options %}
+    <label class="option">
+        <input type="radio" name="answer" value="{{ loop.index0 }}" required>
+        <span>{{ option }}</span>
+    </label>
+    {% endfor %}
+
+    <button type="submit" class="btn" style="width: 100%; font-size: 1.2em;">
+        {% if question_num == total_questions %}
+        Finish Quiz 🏁
+        {% else %}
+        Next Question →
+        {% endif %}
+    </button>
+</form>
+
+<script>
+    // Add keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key >= '1' && e.key <= '4') {
+            const index = parseInt(e.key) - 1;
+            const radios = document.querySelectorAll('input[name="answer"]');
+            if (radios[index]) {
+                radios[index].checked = true;
+            }
+        }
+    });
+
+    // Visual feedback for selection
+    const options = document.querySelectorAll('.option');
+    options.forEach(option => {
+        option.addEventListener('click', function() {
+            options.forEach(opt => opt.style.background = 'white');
+            this.style.background = '#f8f9ff';
+        });
+    });
+</script>
+{% endblock %}

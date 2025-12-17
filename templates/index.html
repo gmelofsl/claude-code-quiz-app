@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Claude Code Quiz - Home{% endblock %}
+
+{% block content %}
+<h1>Claude Code Quiz App</h1>
+<p class="subtitle">Test your knowledge of AI Software Development with Claude Code</p>
+
+<div class="question-box">
+    <h2>Welcome!</h2>
+    <p style="margin-bottom: 20px;">
+        This quiz covers the essential concepts you learned today about working with Claude Code:
+    </p>
+    <ul style="margin-left: 30px; margin-bottom: 20px; line-height: 1.8;">
+        {% for topic in topics %}
+        <li><strong>{{ topic }}</strong></li>
+        {% endfor %}
+    </ul>
+    <p style="color: #666;">
+        <strong>Total Questions:</strong> {{ total_questions }}<br>
+        <strong>Time:</strong> No time limit - take your time to think through each question!
+    </p>
+</div>
+
+<form method="POST" action="/start">
+    <h3 style="margin-bottom: 15px;">Choose Your Quiz Mode:</h3>
+
+    <div class="stats-grid">
+        <div class="stat-card" style="cursor: pointer;" onclick="document.getElementById('mode-all').checked = true;">
+            <input type="radio" id="mode-all" name="mode" value="all" checked style="display: none;">
+            <label for="mode-all" style="cursor: pointer;">
+                <div class="stat-value">{{ total_questions }}</div>
+                <div class="stat-label">All Topics</div>
+            </label>
+        </div>
+
+        {% for topic in topics %}
+        <div class="stat-card" style="cursor: pointer;" onclick="document.getElementById('mode-{{ loop.index }}').checked = true;">
+            <input type="radio" id="mode-{{ loop.index }}" name="mode" value="{{ topic }}" style="display: none;">
+            <label for="mode-{{ loop.index }}" style="cursor: pointer;">
+                <div class="stat-value">📝</div>
+                <div class="stat-label">{{ topic }}</div>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn" style="width: 100%; margin-top: 20px; font-size: 1.3em;">
+        Start Quiz 🚀
+    </button>
+</form>
+{% endblock %}
