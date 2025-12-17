@@ -304,5 +304,104 @@ def dashboard():
                          recent_attempts=recent_attempts,
                          category_stats=category_stats)
 
+@app.route('/history')
+@login_required
+def history():
+    """View all past quiz attempts"""
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+
+    if not user:
+        return redirect(url_for('login'))
+
+    # Get filter parameter
+    filter_quiz_id = request.args.get('quiz_id', type=int)
+
+    # Base query for completed attempts
+    query = Attempt.query.filter_by(user_id=user_id)\
+        .filter(Attempt.completed_at.isnot(None))
+
+    # Apply filter if specified
+    if filter_quiz_id:
+        query = query.filter_by(quiz_id=filter_quiz_id)
+
+    # Get attempts ordered by most recent first
+    attempts = query.order_by(Attempt.completed_at.desc()).all()
+
+    # Get all quizzes for filter dropdown
+    quizzes = Quiz.query.all()
+
+    # Calculate summary statistics
+    total_attempts = len(attempts)
+    if total_attempts > 0:
+        avg_percentage = sum(a.percentage for a in attempts) / total_attempts
+        best_percentage = max(a.percentage for a in attempts)
+        total_questions_answered = sum(a.total_questions for a in attempts)
+    else:
+        avg_percentage = 0
+        best_percentage = 0
+        total_questions_answered = 0
+
+    stats = {
+        'total_attempts': total_attempts,
+        'avg_percentage': round(avg_percentage, 1),
+        'best_percentage': round(best_percentage, 1),
+        'total_questions_answered': total_questions_answered
+    }
+
+    return render_template('history.html',
+                         user=user,
+                         attempts=attempts,
+                         quizzes=quizzes,
+                         stats=stats,
+                         current_filter=filter_quiz_id)
+
+@app.route('/history/<int:attempt_id>')
+@login_required
+def attempt_detail(attempt_id):
+    """View detailed breakdown of a specific quiz attempt"""
+    user_id = session.get('user_id')
+
+    # Get the attempt and verify it belongs to the current user
+    attempt = Attempt.query.get_or_404(attempt_id)
+
+    if attempt.user_id != user_id:
+        return redirect(url_for('history'))
+
+    # Get all user answers for this attempt with question details
+    user_answers = UserAnswer.query.filter_by(attempt_id=attempt_id)\
+        .order_by(UserAnswer.answered_at)\
+        .all()
+
+    # Build detailed answer list with full question information
+    detailed_answers = []
+    for user_answer in user_answers:
+        question = user_answer.question
+        detailed_answers.append({
+            'question_text': question.question_text,
+            'options': question.get_options_list(),
+            'selected_answer': user_answer.selected_answer,
+            'correct_answer': question.correct_answer,
+            'is_correct': user_answer.is_correct,
+            'explanation': question.explanation,
+            'difficulty': question.difficulty
+        })
+
+    # Calculate category breakdown
+    category_stats = {}
+    for user_answer in user_answers:
+        # Get category from quiz
+        category = attempt.quiz.category
+        if category not in category_stats:
+            category_stats[category] = {'correct': 0, 'total': 0}
+        category_stats[category]['total'] += 1
+        if user_answer.is_correct:
+            category_stats[category]['correct'] += 1
+
+    return render_template('attempt_detail.html',
+                         attempt=attempt,
+                         detailed_answers=detailed_answers,
+                         category_stats=category_stats)
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz History - AI Development Quiz App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .filter-select {
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        background: white;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+
+    .filter-select:hover {
+        border-color: #667eea;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .history-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .history-stat-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        border: 2px solid #e0e0e0;
+    }
+
+    .history-stat-value {
+        font-size: 2em;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 5px;
+    }
+
+    .history-stat-label {
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    .attempts-list {
+        margin-top: 30px;
+    }
+
+    .attempt-card {
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .attempt-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+    }
+
+    .attempt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .attempt-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.3em;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .attempt-icon {
+        font-size: 1.5em;
+    }
+
+    .attempt-score {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .attempt-meta {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        color: #666;
+        font-size: 0.95em;
+    }
+
+    .attempt-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .performance-badge {
+        display: inline-block;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+
+    .badge-excellent {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-great {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .badge-good {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-learning {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .no-attempts {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+
+    .no-attempts-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+    }
+
+    .no-attempts-text {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+    }
+
+    .no-attempts-subtext {
+        color: #bbb;
+        font-style: italic;
+    }
+
+    .view-details-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: transform 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .view-details-btn:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Quiz History</h1>
+<p class="subtitle">Review all your past quiz attempts</p>
+
+<!-- Summary Statistics -->
+<div class="history-stats">
+    <div class="history-stat-card">
+        <div class="history-stat-value">{{ stats.total_attempts }}</div>
+        <div class="history-stat-label">Total Attempts</div>
+    </div>
+    <div class="history-stat-card">
+        <div class="history-stat-value">{{ stats.avg_percentage }}%</div>
+        <div class="history-stat-label">Average Score</div>
+    </div>
+    <div class="history-stat-card">
+        <div class="history-stat-value">{{ stats.best_percentage }}%</div>
+        <div class="history-stat-label">Best Score</div>
+    </div>
+    <div class="history-stat-card">
+        <div class="history-stat-value">{{ stats.total_questions_answered }}</div>
+        <div class="history-stat-label">Questions Answered</div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="filter-section">
+    <span class="filter-label">Filter by Category:</span>
+    <select class="filter-select" id="categoryFilter" onchange="filterAttempts()">
+        <option value="">All Categories</option>
+        {% for quiz in quizzes %}
+        <option value="{{ quiz.id }}" {% if current_filter == quiz.id %}selected{% endif %}>
+            {{ quiz.category }}
+        </option>
+        {% endfor %}
+    </select>
+</div>
+
+<script>
+function filterAttempts() {
+    const select = document.getElementById('categoryFilter');
+    const quizId = select.value;
+    if (quizId) {
+        window.location.href = '{{ url_for("history") }}?quiz_id=' + quizId;
+    } else {
+        window.location.href = '{{ url_for("history") }}';
+    }
+}
+</script>
+
+<!-- Attempts List -->
+<h2 style="margin-bottom: 20px;">
+    {% if current_filter %}
+        Attempts (Filtered)
+    {% else %}
+        All Attempts
+    {% endif %}
+</h2>
+
+{% if attempts %}
+<div class="attempts-list">
+    {% for attempt in attempts %}
+    <div class="attempt-card" onclick="window.location.href='{{ url_for('attempt_detail', attempt_id=attempt.id) }}'">
+        <div class="attempt-header">
+            <div class="attempt-title">
+                <span class="attempt-icon">
+                    {% if 'Agent' in attempt.quiz.category %}
+                    🤖
+                    {% elif 'Prompt' in attempt.quiz.category %}
+                    ✍️
+                    {% elif 'Model' in attempt.quiz.category %}
+                    🎯
+                    {% else %}
+                    📝
+                    {% endif %}
+                </span>
+                <span>{{ attempt.quiz.category }}</span>
+            </div>
+            <div class="attempt-score">
+                {{ attempt.score }}/{{ attempt.total_questions }} ({{ attempt.percentage|round(1) }}%)
+            </div>
+        </div>
+
+        <div class="attempt-meta">
+            <div class="attempt-meta-item">
+                <span>📅</span>
+                <span>{{ attempt.get_formatted_date() }}</span>
+            </div>
+            <div class="attempt-meta-item">
+                <span>
+                    {% if attempt.percentage >= 90 %}
+                    <span class="performance-badge badge-excellent">Excellent</span>
+                    {% elif attempt.percentage >= 70 %}
+                    <span class="performance-badge badge-great">Great</span>
+                    {% elif attempt.percentage >= 50 %}
+                    <span class="performance-badge badge-good">Good</span>
+                    {% else %}
+                    <span class="performance-badge badge-learning">Keep Learning</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <a href="{{ url_for('attempt_detail', attempt_id=attempt.id) }}" class="view-details-btn" onclick="event.stopPropagation()">
+            View Details →
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="no-attempts">
+    <div class="no-attempts-icon">📊</div>
+    <div class="no-attempts-text">No quiz attempts found</div>
+    <div class="no-attempts-subtext">
+        {% if current_filter %}
+        Try selecting a different category or clear the filter
+        {% else %}
+        Take your first quiz from the dashboard to get started!
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div style="margin-top: 40px; text-align: center;">
+    <a href="{{ url_for('dashboard') }}" class="btn">← Back to Dashboard</a>
+</div>
+
+{% endblock %}

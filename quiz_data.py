@@ -331,6 +331,207 @@ QUIZ_DATA = [
         "difficulty": "hard",
         "explanation": "For long conversations, use techniques like sliding window (keep recent N messages), summarization (compress older messages), and extracting key facts to external memory."
     },
+
+    # Additional Agent Fundamentals Questions
+    {
+        "category": "Agent Fundamentals",
+        "question": "What is the purpose of an agent's 'action space'?",
+        "options": [
+            "The physical location where the agent runs",
+            "The set of all possible actions an agent can take in its environment",
+            "The memory allocated to the agent",
+            "The user interface of the agent"
+        ],
+        "correct": 1,
+        "difficulty": "easy",
+        "explanation": "The action space defines all possible actions an agent can execute, similar to a function's available methods. For a coding agent, this might include read_file, write_file, run_tests, etc."
+    },
+    {
+        "category": "Agent Fundamentals",
+        "question": "In a multi-agent system, what is 'agent delegation'?",
+        "options": [
+            "Removing agents from the system",
+            "One agent assigning tasks to another specialized agent",
+            "Agents voting on decisions",
+            "Sharing memory between agents"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Agent delegation is when a coordinator or manager agent assigns specific subtasks to specialized agents based on their capabilities, similar to a manager delegating work to team members."
+    },
+    {
+        "category": "Agent Fundamentals",
+        "question": "What is the 'observe-orient-decide-act' (OODA) loop in agent design?",
+        "options": [
+            "A security protocol for agents",
+            "A decision-making cycle where agents observe, analyze situation, decide action, then execute",
+            "A type of neural network architecture",
+            "A debugging technique"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "The OODA loop is a decision framework where agents continuously: Observe the environment, Orient (analyze/understand), Decide on the best action, and Act. This cycle repeats, allowing adaptive behavior."
+    },
+    {
+        "category": "Agent Fundamentals",
+        "question": "Why is 'graceful degradation' important in agent systems?",
+        "options": [
+            "To reduce costs",
+            "To ensure agents can still function partially when tools or resources fail",
+            "To speed up execution",
+            "To simplify the codebase"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "Graceful degradation ensures that if an agent's tool (API, database) fails, the agent can still provide partial functionality or fallback responses rather than crashing completely."
+    },
+
+    # Additional Prompt Engineering Questions
+    {
+        "category": "Prompt Engineering",
+        "question": "What is 'zero-shot prompting'?",
+        "options": [
+            "Prompting without examples, relying on the model's pre-trained knowledge",
+            "Using no words in the prompt",
+            "Disabling the model's output",
+            "A prompt that always fails"
+        ],
+        "correct": 0,
+        "difficulty": "easy",
+        "explanation": "Zero-shot prompting provides only instructions without examples, expecting the model to perform the task based solely on its training. For example: 'Translate this to French: Hello' without showing translation examples."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is the benefit of using structured output formats in prompts?",
+        "options": [
+            "It reduces token usage",
+            "It ensures consistent, parseable responses (JSON, XML, CSV) for programmatic use",
+            "It improves model accuracy",
+            "It increases response speed"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Requesting structured formats like JSON or CSV in prompts makes responses easier to parse and integrate into applications, reducing errors from parsing natural language."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is 'prompt chaining'?",
+        "options": [
+            "Writing very long prompts",
+            "Breaking complex tasks into sequential prompts where each output feeds into the next",
+            "Using multiple AI models simultaneously",
+            "A security vulnerability"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Prompt chaining splits complex tasks into steps: first prompt generates a plan, second prompt executes step 1, third reviews results, etc. Each step's output becomes the next step's input."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "How can you use 'role prompting' effectively?",
+        "options": [
+            "By asking the AI to adopt a specific expertise or persona to improve response quality",
+            "By limiting the AI's capabilities",
+            "By increasing model temperature",
+            "By reducing prompt length"
+        ],
+        "correct": 0,
+        "difficulty": "easy",
+        "explanation": "Role prompting (e.g., 'You are an expert Python developer...') helps the model adopt relevant expertise, tone, and perspective, improving response quality for specialized tasks."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is 'negative prompting' and when is it useful?",
+        "options": [
+            "Criticizing the AI's responses",
+            "Explicitly stating what NOT to include or do in the response",
+            "Using negative numbers in prompts",
+            "A technique for image generation only"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Negative prompting specifies constraints by stating what to avoid (e.g., 'Do not include personal opinions' or 'Avoid using jargon'). This guides the model away from undesired behaviors."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is the 'meta-prompting' technique?",
+        "options": [
+            "Using prompts about prompts",
+            "Asking the AI to generate or improve prompts for a specific task",
+            "A deprecated prompting style",
+            "Prompts that modify system settings"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "Meta-prompting uses the AI to help craft better prompts. For example: 'Generate an optimal prompt for summarizing legal documents' or 'Improve this prompt: [original prompt]'."
+    },
+
+    # Additional Model Selection & Context Management Questions
+    {
+        "category": "Model Selection & Context Management",
+        "question": "What is the main advantage of models with extended context windows (100k+ tokens)?",
+        "options": [
+            "They are faster",
+            "They are cheaper",
+            "They can process entire documents, codebases, or long conversations without truncation",
+            "They are more accurate for all tasks"
+        ],
+        "correct": 2,
+        "difficulty": "easy",
+        "explanation": "Extended context windows allow processing large amounts of information at once, such as entire books, large codebases, or long conversation histories, without needing summarization or chunking."
+    },
+    {
+        "category": "Model Selection & Context Management",
+        "question": "What is 'model cascading' in production systems?",
+        "options": [
+            "Using multiple models in series, starting with fast/cheap models and escalating to powerful ones only when needed",
+            "Training models sequentially",
+            "A type of neural network architecture",
+            "A security feature"
+        ],
+        "correct": 0,
+        "difficulty": "medium",
+        "explanation": "Model cascading routes requests to appropriate models: simple queries go to fast models like Haiku, complex ones escalate to Sonnet/Opus. This optimizes cost and latency while maintaining quality."
+    },
+    {
+        "category": "Model Selection & Context Management",
+        "question": "What is 'context pruning' and when should you use it?",
+        "options": [
+            "Deleting old conversations",
+            "Selectively removing less relevant content from context to stay within limits while preserving critical information",
+            "A model training technique",
+            "A security measure"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "Context pruning intelligently removes less relevant messages or content (e.g., old conversation turns, tangential information) while keeping critical context, allowing longer effective conversations within token limits."
+    },
+    {
+        "category": "Model Selection & Context Management",
+        "question": "What is 'prompt caching' and how does it reduce costs?",
+        "options": [
+            "Storing model responses in a database",
+            "Caching repeated prompt prefixes so they don't need to be reprocessed on every request",
+            "A way to bypass API rate limits",
+            "Pre-training models on common prompts"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Prompt caching stores common prompt prefixes (system prompts, knowledge bases) so subsequent requests reuse the processed context, reducing tokens processed and lowering costs for repeated content."
+    },
+    {
+        "category": "Model Selection & Context Management",
+        "question": "When should you choose a multimodal model over a text-only model?",
+        "options": [
+            "Always, they are strictly better",
+            "When you need to process images, diagrams, charts, or other visual information alongside text",
+            "Never, they are too expensive",
+            "Only for generating images"
+        ],
+        "correct": 1,
+        "difficulty": "easy",
+        "explanation": "Multimodal models like Claude with vision can analyze images, screenshots, diagrams, and charts, making them essential for tasks involving visual content interpretation or document analysis."
+    },
 ]
 
 def get_all_topics():
