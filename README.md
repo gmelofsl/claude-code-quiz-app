@@ -17,11 +17,13 @@ A Flask-based quiz application that tests your knowledge of AI software developm
 ## Features
 
 - 18 comprehensive questions (2 per topic)
+- **Difficulty Levels**: Choose between Easy, Medium, or Hard questions
 - Choose to quiz on all topics or specific topics
+- **Flexible Filtering**: Combine topic and difficulty selection
 - Instant feedback with explanations
 - Detailed results with topic breakdown
 - Review all answers with explanations
-- Beautiful, responsive UI
+- Beautiful, responsive UI with color-coded difficulty badges
 - Keyboard shortcuts for faster navigation (1-4 keys to select answers)
 
 ## Installation
@@ -46,9 +48,20 @@ http://localhost:5000
 ## How to Use
 
 1. **Choose Quiz Mode**: Select "All Topics" for a comprehensive quiz, or pick a specific topic to focus on
-2. **Answer Questions**: Click on your answer choice or use keyboard shortcuts (1-4)
-3. **Review Results**: See your score, topic breakdown, and detailed explanations for each question
-4. **Retake**: Take the quiz again to improve your score!
+2. **Choose Difficulty Level**: Select Easy, Medium, Hard, or All Levels
+3. **Answer Questions**: Click on your answer choice or use keyboard shortcuts (1-4)
+4. **Review Results**: See your score, topic breakdown, and detailed explanations for each question
+5. **Retake**: Take the quiz again to improve your score!
+
+## Difficulty Levels
+
+The quiz includes three difficulty levels:
+
+- **Easy (🟢)**: Basic concepts and definitions - 7 questions
+- **Medium (🟡)**: Application of concepts and when-to-use scenarios - 7 questions
+- **Hard (🔴)**: Best practices, complex scenarios, and trade-offs - 4 questions
+
+You can filter by difficulty level alone, combine it with a specific topic, or practice all levels together!
 
 ## Project Structure
 

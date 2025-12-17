@@ -194,11 +194,79 @@
             color: #999;
             font-size: 0.9em;
         }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 40px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .navbar-link:hover {
+            color: #764ba2;
+        }
+
+        .navbar-username {
+            color: #555;
+            font-weight: 600;
+        }
+
+        .navbar-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .navbar-btn:hover {
+            transform: translateY(-2px);
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="container">
+        {% if session.get('username') %}
+        <div class="navbar">
+            <div class="navbar-left">
+                <a href="{{ url_for('dashboard') }}" class="navbar-link">🏠 Dashboard</a>
+                <a href="{{ url_for('index') }}" class="navbar-link">🎯 Home</a>
+            </div>
+            <div class="navbar-right">
+                <span class="navbar-username">👤 {{ session.get('username') }}</span>
+                <a href="{{ url_for('logout') }}" class="navbar-btn">Logout</a>
+            </div>
+        </div>
+        {% endif %}
         {% block content %}{% endblock %}
 
         <div class="footer">

@@ -1,249 +1,389 @@
-# Quiz questions covering AI software development concepts with Claude Code
+# Quiz questions covering AI software development concepts
 
 QUIZ_DATA = [
-    # Topic 1: CLAUDE.md
+    # Category 1: Agent Fundamentals (8 questions)
     {
-        "topic": "CLAUDE.md",
-        "question": "What is the primary purpose of the CLAUDE.md file?",
+        "category": "Agent Fundamentals",
+        "question": "What is an AI agent?",
         "options": [
-            "To store Claude's conversation history",
-            "To provide project context and instructions to Claude Code",
-            "To configure Claude Code settings",
-            "To document API endpoints"
+            "A software program that takes actions autonomously to achieve goals",
+            "A database management system",
+            "A web server",
+            "A text editor"
         ],
-        "correct": 1,
-        "explanation": "CLAUDE.md serves as a context file that provides Claude with project-specific information, coding standards, architecture details, and instructions."
+        "correct": 0,
+        "difficulty": "easy",
+        "explanation": "An AI agent is a software entity that perceives its environment through sensors and acts upon it through actuators to achieve specific goals autonomously."
     },
     {
-        "topic": "CLAUDE.md",
-        "question": "Which of the following should you include in CLAUDE.md?",
+        "category": "Agent Fundamentals",
+        "question": "Which component is NOT typically part of an AI agent?",
         "options": [
-            "Passwords and API keys",
-            "Project structure, coding conventions, and common patterns",
-            "Complete source code of all files",
-            "Binary files and images"
-        ],
-        "correct": 1,
-        "explanation": "CLAUDE.md should contain high-level project context like structure, conventions, patterns, and guidelines - not secrets or complete source code."
-    },
-
-    # Topic 2: Agents
-    {
-        "topic": "Agents",
-        "question": "When should you use the Task tool with specialized agents?",
-        "options": [
-            "Only when the user explicitly asks for it",
-            "For simple single-file edits",
-            "For complex multi-step tasks or codebase exploration",
-            "Never, always do the work yourself"
+            "Perception (input processing)",
+            "Action (output generation)",
+            "Graphics rendering engine",
+            "Decision-making logic"
         ],
         "correct": 2,
-        "explanation": "Specialized agents (like Explore, Plan) are designed for complex tasks, multi-file operations, and thorough codebase analysis that would be inefficient to do directly."
+        "difficulty": "easy",
+        "explanation": "AI agents typically consist of perception, reasoning/decision-making, and action components. Graphics rendering is unrelated to core agent functionality."
     },
     {
-        "topic": "Agents",
-        "question": "What is the benefit of launching multiple agents concurrently?",
+        "category": "Agent Fundamentals",
+        "question": "When should you use a specialized agent over a general-purpose LLM?",
         "options": [
-            "It reduces token usage",
-            "It maximizes performance by parallelizing independent tasks",
-            "It prevents errors",
-            "It makes debugging easier"
+            "For simple one-shot tasks",
+            "For complex multi-step workflows requiring state management",
+            "Never, general-purpose LLMs are always better",
+            "Only for mathematical calculations"
         ],
         "correct": 1,
-        "explanation": "Launching agents concurrently (in a single message with multiple Task calls) maximizes performance by allowing independent tasks to run in parallel."
+        "difficulty": "medium",
+        "explanation": "Specialized agents excel at complex workflows that require maintaining state, multiple tool calls, and coordinating actions over time."
+    },
+    {
+        "category": "Agent Fundamentals",
+        "question": "What is the main advantage of ReAct (Reasoning + Acting) pattern in agents?",
+        "options": [
+            "It's faster than other approaches",
+            "It interleaves reasoning steps with actions for better decision-making",
+            "It requires less memory",
+            "It works without an LLM"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "ReAct combines reasoning (\"I need to...\") with actions (\"Let me search...\"), allowing the agent to think through problems step-by-step while executing actions."
+    },
+    {
+        "category": "Agent Fundamentals",
+        "question": "What is agent 'memory' used for?",
+        "options": [
+            "Storing user passwords",
+            "Caching previous interactions and learned information across sessions",
+            "Reducing API costs",
+            "Faster computation"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Agent memory stores conversation history, user preferences, and learned patterns, enabling continuity and personalization across sessions."
+    },
+    {
+        "category": "Agent Fundamentals",
+        "question": "What is the 'tool use' capability in AI agents?",
+        "options": [
+            "Ability to write code only",
+            "Ability to call external APIs, databases, and functions to extend capabilities",
+            "Ability to modify its own code",
+            "Ability to train other models"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "Tool use (function calling) allows agents to interact with external systems like APIs, databases, calculators, and code executors, vastly expanding their capabilities beyond text generation."
+    },
+    {
+        "category": "Agent Fundamentals",
+        "question": "How do you prevent infinite loops in autonomous agents?",
+        "options": [
+            "By setting maximum iteration limits and defining clear termination conditions",
+            "By using faster hardware",
+            "By reducing model temperature",
+            "Infinite loops are not a concern"
+        ],
+        "correct": 0,
+        "difficulty": "hard",
+        "explanation": "Autonomous agents need safeguards like max iterations, timeout limits, and clear success/failure conditions to prevent endless execution loops."
+    },
+    {
+        "category": "Agent Fundamentals",
+        "question": "What is the main challenge with multi-agent systems?",
+        "options": [
+            "Higher computational cost",
+            "Coordinating communication and avoiding conflicting actions between agents",
+            "They require more data",
+            "They cannot work with LLMs"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "Multi-agent systems must handle agent coordination, communication protocols, conflict resolution, and ensuring agents work toward common goals without interference."
     },
 
-    # Topic 3: Custom Commands
+    # Category 2: Prompt Engineering (10 questions)
     {
-        "topic": "Custom Commands",
-        "question": "Where should you store custom slash commands?",
+        "category": "Prompt Engineering",
+        "question": "What is a prompt in the context of AI?",
         "options": [
-            "In the root directory",
-            "In .claude/commands/ directory",
-            "In package.json",
-            "In settings.json"
+            "A notification message",
+            "An input instruction that guides the AI's response",
+            "A database query",
+            "An error message"
         ],
         "correct": 1,
-        "explanation": "Custom slash commands are stored as markdown files in the .claude/commands/ directory."
+        "difficulty": "easy",
+        "explanation": "A prompt is the input text or instruction given to an AI model that guides what kind of response it should generate."
     },
     {
-        "topic": "Custom Commands",
-        "question": "When should you create a custom command?",
+        "category": "Prompt Engineering",
+        "question": "Which prompt is more likely to get a useful response?",
         "options": [
-            "For every single task you do",
-            "For repetitive workflows or team-shared processes",
-            "Only for git operations",
-            "Never, built-in commands are sufficient"
+            "Write code",
+            "Write a Python function that calculates the factorial of a number with error handling",
+            "Do something",
+            "Help"
         ],
         "correct": 1,
-        "explanation": "Custom commands are valuable for repetitive workflows, team-shared processes, and standardizing common operations across your team."
+        "difficulty": "easy",
+        "explanation": "Specific, detailed prompts with clear requirements yield better results than vague requests."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is 'few-shot prompting'?",
+        "options": [
+            "Using very short prompts",
+            "Providing a few examples in the prompt to guide the model's behavior",
+            "Sending multiple prompts at once",
+            "Limiting model responses to a few words"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Few-shot prompting includes examples in the prompt (e.g., \"Input: X → Output: Y\") to show the model the desired pattern or format."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is the purpose of 'system prompts'?",
+        "options": [
+            "To restart the system",
+            "To set the AI's role, behavior, and constraints for the entire conversation",
+            "To fix errors",
+            "To speed up responses"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "System prompts establish the AI's persona, expertise domain, tone, and operational guidelines that persist across the conversation."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is 'chain-of-thought' prompting?",
+        "options": [
+            "Asking multiple unrelated questions",
+            "Asking the AI to explain its reasoning step-by-step before giving an answer",
+            "Creating a blockchain",
+            "Linking multiple AI models"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Chain-of-thought prompting asks the model to \"think step-by-step\" or \"explain your reasoning,\" which improves accuracy on complex problems."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "How can you reduce hallucinations in AI responses?",
+        "options": [
+            "Ask for higher creativity",
+            "Request citations, use specific constraints, and verify against ground truth",
+            "Use shorter prompts",
+            "Increase temperature"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Hallucinations can be reduced by asking for citations, providing specific factual constraints, using retrieval-augmented generation, and lower temperature settings."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is 'prompt injection' and why is it a security concern?",
+        "options": [
+            "A way to speed up responses",
+            "A vulnerability where malicious users insert instructions that override the intended prompt",
+            "A technique to improve accuracy",
+            "A method to reduce costs"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "Prompt injection is when untrusted user input contains instructions that subvert the system prompt, potentially causing the AI to leak data or perform unintended actions."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is the trade-off between 'temperature' and prompt reliability?",
+        "options": [
+            "There is no trade-off",
+            "Higher temperature increases creativity but reduces consistency and predictability",
+            "Temperature only affects speed",
+            "Temperature only affects cost"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "Temperature controls randomness: low (0-0.3) for consistent, deterministic outputs; high (0.7-1.0) for creative, varied responses with less predictability."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "What is 'retrieval-augmented generation' (RAG)?",
+        "options": [
+            "A type of neural network",
+            "Combining retrieval from a knowledge base with AI generation to ground responses in facts",
+            "A prompt template",
+            "A model training technique"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "RAG retrieves relevant documents from a knowledge base first, then includes them in the prompt context, allowing the AI to generate responses grounded in specific factual information."
+    },
+    {
+        "category": "Prompt Engineering",
+        "question": "How do you handle prompts that exceed the model's context window?",
+        "options": [
+            "Just truncate the prompt",
+            "Use summarization, chunking, or external memory systems to manage long contexts",
+            "Increase model temperature",
+            "Context limits don't matter"
+        ],
+        "correct": 1,
+        "difficulty": "hard",
+        "explanation": "For long contexts, use techniques like summarizing previous content, splitting into chunks, using external vector databases, or models with larger context windows."
     },
 
-    # Topic 4: Planning Workflow
+    # Category 3: Model Selection & Context Management (7 questions)
     {
-        "topic": "Planning Workflow",
-        "question": "What is the primary benefit of using Plan Mode before coding?",
+        "category": "Model Selection & Context Management",
+        "question": "What factors should you consider when choosing an AI model?",
         "options": [
-            "It makes the code run faster",
-            "It prevents Claude from reading files",
-            "It allows safe exploration and strategy review before making changes",
-            "It automatically fixes bugs"
-        ],
-        "correct": 2,
-        "explanation": "Plan Mode lets Claude analyze and design implementation approaches without making changes, allowing you to review and approve the strategy first."
-    },
-    {
-        "topic": "Planning Workflow",
-        "question": "When should you use EnterPlanMode?",
-        "options": [
-            "Only for fixing typos",
-            "For new features, refactors, and tasks with multiple valid approaches",
-            "After code is already written",
-            "Only when explicitly asked by the user"
-        ],
-        "correct": 1,
-        "explanation": "EnterPlanMode is recommended for non-trivial tasks like new features, refactors, architectural decisions, and anything with multiple implementation approaches."
-    },
-
-    # Topic 5: Model Selection
-    {
-        "topic": "Model Selection",
-        "question": "Which Claude model should you use for quick, straightforward tasks?",
-        "options": [
-            "Opus - it's always the best",
-            "Haiku - to minimize cost and latency",
-            "Sonnet - for everything",
+            "Task complexity, latency requirements, and cost",
+            "Only the model name",
+            "Only the cost",
             "It doesn't matter"
         ],
-        "correct": 1,
-        "explanation": "Haiku is preferred for quick, straightforward tasks to minimize cost and latency, while Sonnet/Opus are better for complex reasoning."
+        "correct": 0,
+        "difficulty": "easy",
+        "explanation": "Model selection depends on task complexity (simple vs. reasoning-heavy), latency needs (real-time vs. batch), cost constraints, and accuracy requirements."
     },
     {
-        "topic": "Model Selection",
-        "question": "How do you switch models in Claude Code?",
+        "category": "Model Selection & Context Management",
+        "question": "What is a 'context window' in LLMs?",
         "options": [
-            "Restart the application",
-            "Edit a configuration file manually",
-            "Use the /model command",
-            "You cannot switch models"
+            "A GUI element",
+            "The maximum amount of text (tokens) the model can process at once",
+            "A time delay",
+            "A type of neural network layer"
+        ],
+        "correct": 1,
+        "difficulty": "easy",
+        "explanation": "The context window is the maximum number of tokens (input + output) the model can process in a single request."
+    },
+    {
+        "category": "Model Selection & Context Management",
+        "question": "When should you use a smaller, faster model like Claude Haiku?",
+        "options": [
+            "For complex reasoning and analysis",
+            "For quick, straightforward tasks where speed and cost matter more than depth",
+            "Never, always use the largest model",
+            "Only for image processing"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Smaller models excel at simple tasks (classification, extraction, simple Q&A) where low latency and cost are priorities."
+    },
+    {
+        "category": "Model Selection & Context Management",
+        "question": "What happens when your prompt exceeds the context window?",
+        "options": [
+            "The model automatically compresses it",
+            "The request fails or gets truncated, losing information",
+            "The cost doubles",
+            "Nothing, context limits are not enforced"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Exceeding context limits typically causes errors or automatic truncation, potentially losing critical information from the prompt or conversation history."
+    },
+    {
+        "category": "Model Selection & Context Management",
+        "question": "What is 'token counting' and why is it important?",
+        "options": [
+            "Counting database records",
+            "Measuring input/output length to estimate costs and manage context limits",
+            "Counting user sessions",
+            "A security feature"
+        ],
+        "correct": 1,
+        "difficulty": "medium",
+        "explanation": "Token counting measures the length of text in tokens (roughly 0.75 words each), crucial for estimating API costs and staying within context limits."
+    },
+    {
+        "category": "Model Selection & Context Management",
+        "question": "What strategy should you use for a task requiring both speed and complex reasoning?",
+        "options": [
+            "Always use the fastest model",
+            "Always use the most powerful model",
+            "Use a routing approach: fast model for simple parts, powerful model for complex reasoning",
+            "Split into multiple sessions"
         ],
         "correct": 2,
-        "explanation": "You can switch models during a session using the /model command to select between Sonnet, Opus, or Haiku."
+        "difficulty": "hard",
+        "explanation": "Intelligent routing uses fast models for straightforward tasks (classification, extraction) and reserves powerful models for complex reasoning, optimizing cost and latency."
     },
-
-    # Topic 6: Context Management
     {
-        "topic": "Context Management",
-        "question": "What does the /clear command do?",
+        "category": "Model Selection & Context Management",
+        "question": "How do you manage context for a long conversation spanning hours?",
         "options": [
-            "Deletes all files in the project",
-            "Clears the conversation history and context",
-            "Clears only the terminal screen",
-            "Resets Claude's memory permanently"
+            "Keep all conversation history in context",
+            "Use rolling summarization, storing key facts while pruning less relevant history",
+            "Start a new conversation every few minutes",
+            "Context management is automatic"
         ],
         "correct": 1,
-        "explanation": "/clear clears the conversation history and context, giving you a fresh start while keeping your files unchanged."
-    },
-    {
-        "topic": "Context Management",
-        "question": "What happens to context in Claude Code?",
-        "options": [
-            "It's limited to 200k tokens and then fails",
-            "It uses automatic summarization for unlimited context",
-            "Context is never tracked",
-            "You must manually clear it every 5 messages"
-        ],
-        "correct": 1,
-        "explanation": "Claude Code uses automatic summarization to provide unlimited context, so you never hit hard limits."
-    },
-
-    # Topic 7: Permissions
-    {
-        "topic": "Permissions",
-        "question": "Which tools require permission approval?",
-        "options": [
-            "All tools including Read",
-            "Only Bash commands",
-            "Bash commands and file modifications (Edit/Write)",
-            "No tools require permission"
-        ],
-        "correct": 2,
-        "explanation": "Read-only tools (Read, Grep, Glob) don't require permission, but Bash commands and file modifications do."
-    },
-    {
-        "topic": "Permissions",
-        "question": "What should you auto-approve in permissions?",
-        "options": [
-            "All bash commands for convenience",
-            "Safe commands like builds, tests, and git status",
-            "Network requests and destructive operations",
-            "Commands that modify .env files"
-        ],
-        "correct": 1,
-        "explanation": "Auto-approve safe, repetitive commands like builds, tests, and git status. Always manually review destructive operations and network requests."
-    },
-
-    # Topic 8: Review Process
-    {
-        "topic": "Review Process",
-        "question": "What keyboard shortcut opens the rewind menu?",
-        "options": [
-            "Ctrl+Z",
-            "Esc + Esc",
-            "Shift+R",
-            "Alt+R"
-        ],
-        "correct": 1,
-        "explanation": "Pressing Esc + Esc opens the rewind menu, allowing you to undo conversation and/or code changes."
-    },
-    {
-        "topic": "Review Process",
-        "question": "How do checkpoints work in Claude Code?",
-        "options": [
-            "You must manually create them",
-            "They're created automatically at each user prompt",
-            "They only work with git commits",
-            "They expire after 5 minutes"
-        ],
-        "correct": 1,
-        "explanation": "Claude Code automatically creates checkpoints at each user prompt, persisting for 30 days."
-    },
-
-    # Topic 9: MCP
-    {
-        "topic": "MCP",
-        "question": "What does MCP stand for?",
-        "options": [
-            "Multi-Code Protocol",
-            "Model Context Protocol",
-            "Machine Control Program",
-            "Master Configuration Process"
-        ],
-        "correct": 1,
-        "explanation": "MCP stands for Model Context Protocol, a standard for connecting AI assistants to external tools and data sources."
-    },
-    {
-        "topic": "MCP",
-        "question": "What is the primary benefit of MCP servers?",
-        "options": [
-            "They make code run faster",
-            "They extend Claude's capabilities with external tools and data sources",
-            "They reduce token costs",
-            "They store your conversation history"
-        ],
-        "correct": 1,
-        "explanation": "MCP servers allow Claude to connect to external tools, APIs, databases, and data sources, extending its capabilities beyond built-in tools."
+        "difficulty": "hard",
+        "explanation": "For long conversations, use techniques like sliding window (keep recent N messages), summarization (compress older messages), and extracting key facts to external memory."
     },
 ]
 
 def get_all_topics():
-    """Get list of all unique topics"""
-    return list(set(q["topic"] for q in QUIZ_DATA))
+    """Get list of all unique categories (kept for backwards compatibility)"""
+    return list(set(q.get("category", q.get("topic", "General")) for q in QUIZ_DATA))
+
+def get_all_categories():
+    """Get list of all unique categories"""
+    return list(set(q.get("category", "General") for q in QUIZ_DATA))
 
 def get_questions_by_topic(topic):
-    """Get all questions for a specific topic"""
-    return [q for q in QUIZ_DATA if q["topic"] == topic]
+    """Get all questions for a specific category (kept for backwards compatibility)"""
+    return [q for q in QUIZ_DATA if q.get("category", q.get("topic")) == topic]
+
+def get_questions_by_category(category):
+    """Get all questions for a specific category"""
+    return [q for q in QUIZ_DATA if q.get("category") == category]
 
 def get_total_questions():
     """Get total number of questions"""
     return len(QUIZ_DATA)
+
+def get_all_difficulties():
+    """Get list of all unique difficulty levels"""
+    return ["easy", "medium", "hard"]
+
+def get_questions_by_difficulty(difficulty):
+    """Get all questions for a specific difficulty level"""
+    return [q for q in QUIZ_DATA if q.get("difficulty") == difficulty]
+
+def get_questions_by_topic_and_difficulty(topic, difficulty):
+    """Get questions filtered by both category and difficulty (kept for backwards compatibility)"""
+    return [q for q in QUIZ_DATA
+            if q.get("category", q.get("topic")) == topic and q.get("difficulty") == difficulty]
+
+def get_questions_by_category_and_difficulty(category, difficulty):
+    """Get questions filtered by both category and difficulty"""
+    return [q for q in QUIZ_DATA
+            if q.get("category") == category and q.get("difficulty") == difficulty]
+
+def get_difficulty_stats():
+    """Get count of questions for each difficulty level"""
+    stats = {"easy": 0, "medium": 0, "hard": 0}
+    for question in QUIZ_DATA:
+        difficulty = question.get("difficulty", "unknown")
+        if difficulty in stats:
+            stats[difficulty] += 1
+    return stats
+
+def get_category_stats():
+    """Get count of questions for each category"""
+    stats = {}
+    for question in QUIZ_DATA:
+        category = question.get("category", "General")
+        stats[category] = stats.get(category, 0) + 1
+    return stats

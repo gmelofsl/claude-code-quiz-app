@@ -12,7 +12,16 @@
     <div class="progress-fill" style="width: {{ progress }}%;"></div>
 </div>
 
-<span class="topic-badge">{{ question.topic }}</span>
+<div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+    <span class="topic-badge">{{ question.topic }}</span>
+    {% if question.difficulty == 'easy' %}
+    <span class="topic-badge" style="background: linear-gradient(135deg, #81c784, #66bb6a);">Easy 🟢</span>
+    {% elif question.difficulty == 'medium' %}
+    <span class="topic-badge" style="background: linear-gradient(135deg, #ffb74d, #ffa726);">Medium 🟡</span>
+    {% elif question.difficulty == 'hard' %}
+    <span class="topic-badge" style="background: linear-gradient(135deg, #e57373, #ef5350);">Hard 🔴</span>
+    {% endif %}
+</div>
 
 <div class="question-box">
     <h2 style="line-height: 1.5;">{{ question.question }}</h2>
