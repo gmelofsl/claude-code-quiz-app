@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}Attempt Details - AI Development Quiz App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .attempt-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+
+    .attempt-summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .attempt-summary-title {
+        font-size: 2em;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .attempt-summary-score {
+        font-size: 2.5em;
+        font-weight: bold;
+    }
+
+    .attempt-summary-meta {
+        display: flex;
+        gap: 25px;
+        flex-wrap: wrap;
+        opacity: 0.95;
+    }
+
+    .attempt-summary-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.1em;
+    }
+
+    .category-breakdown {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .category-breakdown-title {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .category-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .category-stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+    }
+
+    .category-stat-name {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .category-stat-score {
+        font-size: 1.5em;
+        color: #667eea;
+        font-weight: bold;
+    }
+
+    .questions-section {
+        margin-top: 40px;
+    }
+
+    .question-card {
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+
+    .question-card.correct {
+        border-left: 6px solid #4caf50;
+        background: #f1f8f4;
+    }
+
+    .question-card.incorrect {
+        border-left: 6px solid #f44336;
+        background: #fef5f5;
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
+
+    .question-number {
+        font-weight: 600;
+        color: #667eea;
+        font-size: 0.9em;
+    }
+
+    .question-status {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    .question-status.correct {
+        color: #4caf50;
+    }
+
+    .question-status.incorrect {
+        color: #f44336;
+    }
+
+    .question-text {
+        font-size: 1.2em;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+
+    .question-difficulty {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .difficulty-easy {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .difficulty-medium {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .difficulty-hard {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .answer-option {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border: 2px solid #e0e0e0;
+        background: white;
+    }
+
+    .answer-option.selected {
+        border-color: #667eea;
+        background: #f8f9ff;
+        font-weight: 600;
+    }
+
+    .answer-option.correct-answer {
+        border-color: #4caf50;
+        background: #f1f8f4;
+        font-weight: 600;
+    }
+
+    .answer-option.selected.incorrect {
+        border-color: #f44336;
+        background: #fef5f5;
+    }
+
+    .answer-label {
+        font-size: 0.85em;
+        font-weight: bold;
+        margin-right: 8px;
+        color: #667eea;
+    }
+
+    .explanation-box {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .explanation-title {
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 1em;
+    }
+
+    .explanation-text {
+        color: #555;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .back-button {
+        margin-top: 40px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Attempt Summary -->
+<div class="attempt-summary">
+    <div class="attempt-summary-header">
+        <div class="attempt-summary-title">
+            <span>
+                {% if 'Agent' in attempt.quiz.category %}
+                🤖
+                {% elif 'Prompt' in attempt.quiz.category %}
+                ✍️
+                {% elif 'Model' in attempt.quiz.category %}
+                🎯
+                {% else %}
+                📝
+                {% endif %}
+            </span>
+            <span>{{ attempt.quiz.category }}</span>
+        </div>
+        <div class="attempt-summary-score">
+            {{ attempt.score }}/{{ attempt.total_questions }}
+        </div>
+    </div>
+    <div class="attempt-summary-meta">
+        <div class="attempt-summary-meta-item">
+            <span>📅</span>
+            <span>{{ attempt.get_formatted_date() }}</span>
+        </div>
+        <div class="attempt-summary-meta-item">
+            <span>📊</span>
+            <span>{{ attempt.percentage|round(1) }}%</span>
+        </div>
+        <div class="attempt-summary-meta-item">
+            <span>
+                {% if attempt.percentage >= 90 %}
+                🌟 Excellent Performance
+                {% elif attempt.percentage >= 70 %}
+                🎯 Great Job
+                {% elif attempt.percentage >= 50 %}
+                📚 Good Effort
+                {% else %}
+                💪 Keep Learning
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown -->
+{% if category_stats %}
+<div class="category-breakdown">
+    <div class="category-breakdown-title">Category Performance</div>
+    <div class="category-stats">
+        {% for category, stats in category_stats.items() %}
+        <div class="category-stat-card">
+            <div class="category-stat-name">{{ category }}</div>
+            <div class="category-stat-score">
+                {{ stats.correct }}/{{ stats.total }}
+                <span style="font-size: 0.6em; color: #666;">
+                    ({{ (stats.correct / stats.total * 100)|round(0)|int }}%)
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Questions and Answers -->
+<div class="questions-section">
+    <h2 style="margin-bottom: 25px;">Question-by-Question Review</h2>
+
+    {% for answer in detailed_answers %}
+    <div class="question-card {% if answer.is_correct %}correct{% else %}incorrect{% endif %}">
+        <div class="question-header">
+            <div>
+                <div class="question-number">Question {{ loop.index }} of {{ detailed_answers|length }}</div>
+                {% if answer.difficulty %}
+                <span class="question-difficulty difficulty-{{ answer.difficulty }}">
+                    {{ answer.difficulty|capitalize }}
+                </span>
+                {% endif %}
+            </div>
+            <div class="question-status {% if answer.is_correct %}correct{% else %}incorrect{% endif %}">
+                {% if answer.is_correct %}
+                ✓ Correct
+                {% else %}
+                ✗ Incorrect
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="question-text">{{ answer.question_text }}</div>
+
+        <div class="answer-options">
+            {% for option in answer.options %}
+            <div class="answer-option
+                {% if loop.index0 == answer.selected_answer %}selected{% endif %}
+                {% if loop.index0 == answer.correct_answer %}correct-answer{% endif %}
+                {% if loop.index0 == answer.selected_answer and not answer.is_correct %}incorrect{% endif %}">
+                <span class="answer-label">{{ loop.index }}.</span>
+                <span>{{ option }}</span>
+                {% if loop.index0 == answer.selected_answer %}
+                    <span style="float: right;">← Your Answer</span>
+                {% endif %}
+                {% if loop.index0 == answer.correct_answer and loop.index0 != answer.selected_answer %}
+                    <span style="float: right; color: #4caf50;">✓ Correct Answer</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if answer.explanation %}
+        <div class="explanation-box">
+            <div class="explanation-title">💡 Explanation</div>
+            <div class="explanation-text">{{ answer.explanation }}</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<div class="back-button">
+    <a href="{{ url_for('history') }}" class="btn">← Back to History</a>
+    <a href="{{ url_for('dashboard') }}" class="btn">← Back to Dashboard</a>
+</div>
+
+{% endblock %}

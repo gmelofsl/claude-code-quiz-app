@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}AI Development Quiz App - Home{% endblock %}
+
+{% block content %}
+<h1>AI Development Quiz App</h1>
+<p class="subtitle">Master the fundamentals of AI software development</p>
+
+<div class="question-box" style="margin-top: 40px;">
+    <h2 style="margin-bottom: 20px;">Welcome!</h2>
+    <p style="margin-bottom: 30px; font-size: 1.1em; line-height: 1.8;">
+        Test and reinforce your understanding of AI software development concepts including:
+    </p>
+    <ul style="margin-left: 30px; margin-bottom: 30px; line-height: 2;">
+        <li><strong>🤖 Agent Fundamentals</strong> - Purpose, structure, and design of AI agents</li>
+        <li><strong>✍️ Prompt Engineering</strong> - How to write effective prompts and control outputs</li>
+        <li><strong>🎯 Model Selection & Context Management</strong> - Choosing the right model and managing context</li>
+    </ul>
+    <p style="color: #666; margin-bottom: 30px;">
+        Track your progress, review past attempts, and watch your understanding grow over time!
+    </p>
+    <a href="{{ url_for('login') }}" class="btn" style="width: 100%; text-align: center; display: block; text-decoration: none; font-size: 1.2em;">
+        Get Started 🚀
+    </a>
+</div>
+
+<div style="margin-top: 30px; text-align: center; color: #666;">
+    <p>✨ No password required - just choose a username to begin</p>
+</div>
+{% endblock %}

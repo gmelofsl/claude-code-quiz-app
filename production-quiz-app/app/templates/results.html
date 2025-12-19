@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Results - Claude Code Quiz{% endblock %}
+
+{% block content %}
+<h1>Quiz Complete! {{ performance }}</h1>
+
+<div class="stats-grid" style="margin: 30px 0;">
+    <div class="stat-card">
+        <div class="stat-value">{{ score }}</div>
+        <div class="stat-label">Correct Answers</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total Questions</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" style="color: {% if percentage >= 70 %}#4caf50{% elif percentage >= 50 %}#ff9800{% else %}#f44336{% endif %};">
+            {{ percentage }}%
+        </div>
+        <div class="stat-label">Score</div>
+    </div>
+</div>
+
+<div class="question-box" style="text-align: center;">
+    <h2>{{ message }}</h2>
+</div>
+
+<h2 style="margin-top: 40px; margin-bottom: 20px;">Category Breakdown</h2>
+<div class="stats-grid">
+    {% for category, stats in category_stats.items() %}
+    <div class="stat-card">
+        <div class="stat-value" style="font-size: 1.5em;">
+            {{ stats.correct }} / {{ stats.total }}
+        </div>
+        <div class="stat-label">{{ category }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<h2 style="margin-top: 40px; margin-bottom: 20px;">Review Your Answers</h2>
+{% for answer in answers %}
+<div class="answer-review {% if answer.is_correct %}correct{% else %}incorrect{% endif %}">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <span class="topic-badge" style="margin: 0;">{{ answer.category }}</span>
+            {% if answer.difficulty == 'easy' %}
+            <span class="topic-badge" style="margin: 0; background: linear-gradient(135deg, #81c784, #66bb6a);">Easy 🟢</span>
+            {% elif answer.difficulty == 'medium' %}
+            <span class="topic-badge" style="margin: 0; background: linear-gradient(135deg, #ffb74d, #ffa726);">Medium 🟡</span>
+            {% elif answer.difficulty == 'hard' %}
+            <span class="topic-badge" style="margin: 0; background: linear-gradient(135deg, #e57373, #ef5350);">Hard 🔴</span>
+            {% endif %}
+        </div>
+        <span style="font-weight: bold; color: {% if answer.is_correct %}#4caf50{% else %}#f44336{% endif %};">
+            {% if answer.is_correct %}✓ Correct{% else %}✗ Incorrect{% endif %}
+        </span>
+    </div>
+
+    <h3 style="color: #333; margin-bottom: 15px;">{{ answer.question }}</h3>
+
+    <div style="margin-bottom: 10px;">
+        <strong>Your answer:</strong>
+        <div style="padding: 10px; background: white; border-radius: 5px; margin-top: 5px;">
+            {{ answer.options[answer.selected] }}
+        </div>
+    </div>
+
+    {% if not answer.is_correct %}
+    <div style="margin-bottom: 10px;">
+        <strong style="color: #4caf50;">Correct answer:</strong>
+        <div style="padding: 10px; background: #e8f5e9; border-radius: 5px; margin-top: 5px;">
+            {{ answer.options[answer.correct] }}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="explanation">
+        <strong>💡 Explanation:</strong> {{ answer.explanation }}
+    </div>
+</div>
+{% endfor %}
+
+<div style="text-align: center; margin-top: 40px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+    <a href="{{ url_for('dashboard') }}" class="btn" style="font-size: 1.1em; background: linear-gradient(135deg, #4caf50, #45a049);">
+        🏠 Back to Dashboard
+    </a>
+    {% if quiz %}
+    <form method="POST" action="{{ url_for('start_quiz') }}" style="margin: 0; display: inline;">
+        <input type="hidden" name="quiz_id" value="{{ quiz.id }}">
+        <button type="submit" class="btn" style="font-size: 1.1em; width: auto;">
+            🔄 Retake This Quiz
+        </button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

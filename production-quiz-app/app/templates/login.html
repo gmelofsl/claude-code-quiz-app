@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - AI Development Quiz App{% endblock %}
+
+{% block content %}
+<h1>Welcome to AI Development Quiz App</h1>
+<p class="subtitle">Test your knowledge of AI software development concepts</p>
+
+<div class="question-box" style="margin-top: 40px;">
+    <h2 style="margin-bottom: 20px;">Enter Your Username</h2>
+    <form method="POST" action="{{ url_for('login') }}">
+        <div style="margin-bottom: 20px;">
+            <input
+                type="text"
+                name="username"
+                id="username"
+                placeholder="Choose a username"
+                required
+                autofocus
+                style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1.1em; box-sizing: border-box;"
+            >
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Continue</button>
+    </form>
+</div>
+
+<p style="text-align: center; margin-top: 30px; color: #666;">
+    No password required - just enter a username to get started!
+</p>
+{% endblock %}

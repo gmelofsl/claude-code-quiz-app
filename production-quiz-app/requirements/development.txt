@@ -1,0 +1,14 @@
+# Development dependencies
+-r base.txt
+
+# Debug toolbar
+Flask-DebugToolbar==0.14.1
+
+# Code quality
+flake8==7.0.0
+black==23.12.1
+isort==5.13.2
+
+# Development utilities
+ipython==8.19.0
+ipdb==0.13.13

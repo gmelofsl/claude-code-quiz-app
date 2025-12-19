@@ -1,0 +1,15 @@
+# Testing dependencies
+-r base.txt
+
+# Test framework
+pytest==7.4.3
+pytest-flask==1.3.0
+pytest-cov==4.1.0
+
+# Test data generation
+factory-boy==3.3.0
+Faker==20.1.0
+
+# Test utilities
+pytest-mock==3.12.0
+coverage==7.3.4
