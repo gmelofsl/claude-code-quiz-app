@@ -1,0 +1,71 @@
+# Coverage.py configuration for Production Quiz App
+
+[run]
+# Source code to measure
+source = app
+
+# Omit these patterns from coverage
+omit =
+    */tests/*
+    */venv/*
+    */env/*
+    */.venv/*
+    */migrations/*
+    */scripts/*
+    */__pycache__/*
+    */site-packages/*
+
+# Run tests in parallel if possible
+parallel = True
+
+# Measure branch coverage (if/else branches)
+branch = True
+
+[report]
+# Reporting precision
+precision = 2
+
+# Show lines missing coverage
+show_missing = True
+
+# Sort by file name
+sort = Name
+
+# Exclude lines from coverage
+exclude_lines =
+    # Standard pragma
+    pragma: no cover
+
+    # Don't cover defensive programming
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't cover abstract methods
+    @abstractmethod
+
+    # Don't cover debugging code
+    def __repr__
+    def __str__
+
+    # Don't cover if __name__ == __main__
+    if __name__ == .__main__.:
+
+    # Don't cover typing imports
+    if TYPE_CHECKING:
+
+    # Don't cover pass statements
+    pass
+
+# Fail if coverage is below this percentage
+fail_under = 80
+
+[html]
+# HTML report directory
+directory = htmlcov
+
+# HTML report title
+title = Production Quiz App - Coverage Report
+
+[xml]
+# XML report file
+output = coverage.xml

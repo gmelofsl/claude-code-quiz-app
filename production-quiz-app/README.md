@@ -148,11 +148,36 @@ flake8 app tests
 
 ## Production Deployment
 
-### Docker
+### Docker (Recommended)
 
+**Quick Start:**
 ```bash
-cd deployment/docker
+# Configure environment
+cp .env.example .env.production
+# Edit .env.production with production values
+
+# Start all services (PostgreSQL, Redis, Flask, Nginx)
 docker-compose up -d
+
+# Run migrations
+docker-compose exec web flask db upgrade
+
+# Seed database
+docker-compose exec web python scripts/seed_data.py
+
+# View logs
+docker-compose logs -f
+```
+
+**Services:**
+- **Web**: Flask app with Gunicorn (port 8000)
+- **PostgreSQL**: Database (port 5432)
+- **Redis**: Cache and sessions (port 6379)
+- **Nginx**: Reverse proxy with SSL (ports 80, 443)
+
+**Health Check:**
+```bash
+curl http://localhost:8000/health
 ```
 
 ### Manual Deployment

@@ -112,6 +112,46 @@ def register_blueprints(app):
     def index():
         return {'status': 'ok', 'message': 'Production Quiz App - Authentication System Active'}
 
+    # Health check endpoint
+    @app.route('/health')
+    def health_check():
+        """
+        Health check endpoint for monitoring and load balancers.
+
+        Checks database connectivity and returns system status.
+        """
+        from datetime import datetime
+
+        health_status = {
+            'status': 'healthy',
+            'timestamp': datetime.utcnow().isoformat(),
+            'service': 'quiz-app',
+            'version': '1.0.0'
+        }
+
+        # Check database connection
+        try:
+            from sqlalchemy import text
+            with db.engine.connect() as conn:
+                conn.execute(text('SELECT 1'))
+            health_status['database'] = 'connected'
+        except Exception as e:
+            health_status['database'] = 'disconnected'
+            health_status['status'] = 'unhealthy'
+            app.logger.error(f'Health check database error: {e}')
+
+        # Check cache connection if configured
+        try:
+            if cache.cache:
+                cache.cache.get('health_check')
+                health_status['cache'] = 'connected'
+        except Exception as e:
+            health_status['cache'] = 'disconnected'
+            app.logger.warning(f'Health check cache error: {e}')
+
+        status_code = 200 if health_status['status'] == 'healthy' else 503
+        return health_status, status_code
+
 
 def configure_logging(app):
     """Configure application logging."""
