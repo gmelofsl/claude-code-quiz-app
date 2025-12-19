@@ -133,18 +133,48 @@ flask db upgrade
 flask db downgrade
 ```
 
-### Code Quality
+### Code Quality & Linting
 
+**Quick Commands:**
 ```bash
-# Format code
-black app tests
+# Run all checks
+./scripts/lint.sh          # Linux/Mac
+scripts\lint.bat           # Windows
 
-# Sort imports
-isort app tests
-
-# Lint
-flake8 app tests
+# Auto-fix formatting issues
+./scripts/format.sh        # Linux/Mac
+scripts\format.bat         # Windows
 ```
+
+**Individual Tools:**
+```bash
+# Code formatting
+black app/ tests/
+
+# Import sorting
+isort app/ tests/
+
+# Linting
+flake8 app/ tests/
+
+# Security scanning
+bandit -r app/
+
+# Type checking
+mypy app/
+```
+
+**Pre-commit Hooks (Optional):**
+```bash
+# Install hooks
+pip install pre-commit
+pre-commit install
+
+# Run manually
+pre-commit run --all-files
+```
+
+See [LINTING.md](LINTING.md) for detailed linting guide.
 
 ## Production Deployment
 

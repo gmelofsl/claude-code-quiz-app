@@ -4,11 +4,32 @@
 # Debug toolbar
 Flask-DebugToolbar==0.14.1
 
-# Code quality
-flake8==7.0.0
+# Code formatting
 black==23.12.1
 isort==5.13.2
+
+# Linting
+flake8==7.0.0
+flake8-docstrings==1.7.0
+flake8-bugbear==23.12.2
+flake8-comprehensions==3.14.0
+flake8-simplify==0.21.0
+
+# Security scanning
+bandit==1.7.6
+safety==3.0.1
+
+# Type checking
+mypy==1.7.1
+
+# Pre-commit hooks
+pre-commit==3.6.0
+
+# Code complexity
+radon==6.0.1
+mccabe==0.7.0
 
 # Development utilities
 ipython==8.19.0
 ipdb==0.13.13
+watchdog==3.0.0
