@@ -91,16 +91,17 @@ def initialize_extensions(app):
 def register_blueprints(app):
     """Register Flask blueprints."""
     # Import blueprints here to avoid circular imports
-    # Blueprints will be created in Phase 3
+    from app.routes.auth import auth_bp
 
-    # Example (to be implemented):
-    # from app.routes.auth import auth_bp
+    # Register authentication blueprint
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+
+    # TODO: Register other blueprints
     # from app.routes.quiz import quiz_bp
     # from app.routes.dashboard import dashboard_bp
     # from app.routes.history import history_bp
     # from app.routes.api import api_bp
 
-    # app.register_blueprint(auth_bp, url_prefix='/auth')
     # app.register_blueprint(quiz_bp, url_prefix='/quiz')
     # app.register_blueprint(dashboard_bp)
     # app.register_blueprint(history_bp)
@@ -109,7 +110,7 @@ def register_blueprints(app):
     # Temporary root route for testing
     @app.route('/')
     def index():
-        return {'status': 'ok', 'message': 'Production Quiz App - Application Factory Initialized'}
+        return {'status': 'ok', 'message': 'Production Quiz App - Authentication System Active'}
 
 
 def configure_logging(app):

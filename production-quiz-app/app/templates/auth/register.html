@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Register - AI Development Quiz{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 0 auto;">
+    <h1 class="text-center">Create Account</h1>
+    <p class="text-center mt-3" style="color: #6b7280;">Join us and start testing your AI knowledge!</p>
+
+    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.username.label }}
+            {{ form.username(class="form-control", placeholder="Choose a username") }}
+            {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+            <small style="color: #6b7280;">3-80 characters, letters, numbers, and underscores only</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control", placeholder="Enter your email") }}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.password.label }}
+            {{ form.password(class="form-control", placeholder="Create a strong password") }}
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+            <small style="color: #6b7280;">Min 8 characters, must include uppercase, lowercase, and number</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.confirm_password.label }}
+            {{ form.confirm_password(class="form-control", placeholder="Confirm your password") }}
+            {% if form.confirm_password.errors %}
+                {% for error in form.confirm_password.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
+        </div>
+    </form>
+
+    <div class="text-center mt-3">
+        <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+    </div>
+</div>
+{% endblock %}
