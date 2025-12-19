@@ -61,6 +61,10 @@ def initialize_extensions(app):
     # Database
     db.init_app(app)
 
+    # Import models so SQLAlchemy can create tables
+    # This must happen after db.init_app() but before migrate.init_app()
+    from app.models import User, Quiz, Question, Attempt, UserAnswer  # noqa: F401
+
     # Migrations
     migrate.init_app(app, db)
 

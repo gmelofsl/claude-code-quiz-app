@@ -158,15 +158,11 @@ class ProductionConfig(BaseConfig):
     DEBUG = False
     TESTING = False
 
-    # Database - PostgreSQL required
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    if not SQLALCHEMY_DATABASE_URI:
-        raise ValueError("DATABASE_URL environment variable must be set in production")
+    # Database - PostgreSQL required (will be validated when config is actually used)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or None
 
     # Redis for caching and rate limiting (required)
-    REDIS_URL = os.environ.get('REDIS_URL')
-    if not REDIS_URL:
-        raise ValueError("REDIS_URL environment variable must be set in production")
+    REDIS_URL = os.environ.get('REDIS_URL') or None
 
     CACHE_TYPE = 'RedisCache'
     CACHE_REDIS_URL = REDIS_URL
@@ -180,9 +176,16 @@ class ProductionConfig(BaseConfig):
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_SECURE = True
 
-    # Strict secret key requirement
-    if not os.environ.get('SECRET_KEY'):
-        raise ValueError("SECRET_KEY environment variable must be set in production")
+    # Validation will happen in init method
+    @classmethod
+    def init_app(cls, app):
+        """Validate production configuration."""
+        if not cls.SQLALCHEMY_DATABASE_URI:
+            raise ValueError("DATABASE_URL environment variable must be set in production")
+        if not cls.REDIS_URL:
+            raise ValueError("REDIS_URL environment variable must be set in production")
+        if not os.environ.get('SECRET_KEY'):
+            raise ValueError("SECRET_KEY environment variable must be set in production")
 
     # Security Headers (strict)
     SECURITY_HEADERS = {
