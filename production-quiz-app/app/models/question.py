@@ -2,7 +2,6 @@
 Question model for storing quiz questions and answers.
 """
 
-from datetime import datetime
 from app.extensions import db
 
 
@@ -12,13 +11,14 @@ class Question(db.Model):
 
     Each question belongs to a quiz and has 4 options with one correct answer.
     """
-    __tablename__ = 'questions'
+
+    __tablename__ = "questions"
 
     # Primary key
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     # Foreign key
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False, index=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey("quizzes.id"), nullable=False, index=True)
 
     # Question content
     question_text = db.Column(db.Text, nullable=False)
@@ -38,28 +38,27 @@ class Question(db.Model):
     order_index = db.Column(db.Integer, nullable=True)  # Order within quiz
 
     # Relationships
-    user_answers = db.relationship('UserAnswer', backref='question', lazy=True, cascade='all, delete-orphan')
+    user_answers = db.relationship(
+        "UserAnswer", backref="question", lazy=True, cascade="all, delete-orphan"
+    )
 
     # Indexes and constraints
     __table_args__ = (
         # Indexes for query performance
-        db.Index('idx_question_quiz_id', 'quiz_id'),
-        db.Index('idx_question_difficulty', 'difficulty'),
-        db.Index('idx_question_quiz_difficulty', 'quiz_id', 'difficulty'),  # Composite index
-
+        db.Index("idx_question_quiz_id", "quiz_id"),
+        db.Index("idx_question_difficulty", "difficulty"),
+        db.Index("idx_question_quiz_difficulty", "quiz_id", "difficulty"),  # Composite index
         # Data validation constraints
         db.CheckConstraint(
-            'correct_answer >= 0 AND correct_answer <= 3',
-            name='check_correct_answer_range'
+            "correct_answer >= 0 AND correct_answer <= 3", name="check_correct_answer_range"
         ),
         db.CheckConstraint(
-            "difficulty IN ('easy', 'medium', 'hard')",
-            name='check_difficulty_enum'
+            "difficulty IN ('easy', 'medium', 'hard')", name="check_difficulty_enum"
         ),
     )
 
     def __repr__(self):
-        return f'<Question {self.id}: {self.question_text[:50]}...>'
+        return f"<Question {self.id}: {self.question_text[:50]}...>"
 
     def get_options_list(self):
         """
@@ -88,12 +87,12 @@ class Question(db.Model):
             dict: Question data including id, text, options, correct answer, etc.
         """
         return {
-            'id': self.id,
-            'question': self.question_text,
-            'options': self.get_options_list(),
-            'correct': self.correct_answer,
-            'explanation': self.explanation,
-            'difficulty': self.difficulty
+            "id": self.id,
+            "question": self.question_text,
+            "options": self.get_options_list(),
+            "correct": self.correct_answer,
+            "explanation": self.explanation,
+            "difficulty": self.difficulty,
         }
 
     def check_answer(self, selected_option):
@@ -115,9 +114,5 @@ class Question(db.Model):
         Returns:
             int: Points for this question (1=easy, 2=medium, 3=hard)
         """
-        weights = {
-            'easy': 1,
-            'medium': 2,
-            'hard': 3
-        }
+        weights = {"easy": 1, "medium": 2, "hard": 3}
         return weights.get(self.difficulty, 1)

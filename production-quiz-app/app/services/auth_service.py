@@ -4,8 +4,8 @@ Authentication service with business logic.
 Handles user registration, login, password reset, email verification, etc.
 """
 
-from datetime import datetime
 from flask import current_app
+
 from app.extensions import db
 from app.models.user import User
 
@@ -31,19 +31,15 @@ class AuthService:
         try:
             # Check if username already exists
             if User.query.filter_by(username=username).first():
-                return None, 'Username already taken'
+                return None, "Username already taken"
 
             # Check if email already exists
             if User.query.filter_by(email=email).first():
-                return None, 'Email already registered'
+                return None, "Email already registered"
 
             # Create new user
             user = User(
-                username=username,
-                email=email,
-                is_active=True,
-                is_admin=False,
-                email_verified=False
+                username=username, email=email, is_active=True, is_admin=False, email_verified=False
             )
 
             # Set password (hashed)
@@ -56,14 +52,14 @@ class AuthService:
             db.session.add(user)
             db.session.commit()
 
-            current_app.logger.info(f'New user registered: {username}')
+            current_app.logger.info(f"New user registered: {username}")
 
             return user, None
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f'Registration error: {e}')
-            return None, 'Registration failed. Please try again.'
+            current_app.logger.error(f"Registration error: {e}")
+            return None, "Registration failed. Please try again."
 
     @staticmethod
     def authenticate_user(username_or_email, password):
@@ -87,35 +83,38 @@ class AuthService:
 
             # User not found
             if not user:
-                return None, 'Invalid username/email or password'
+                return None, "Invalid username/email or password"
 
             # Check if account is locked
             if user.is_account_locked():
-                return None, 'Account temporarily locked due to multiple failed login attempts. Please try again later.'
+                return (
+                    None,
+                    "Account temporarily locked due to multiple failed login attempts. Please try again later.",
+                )
 
             # Check if account is active
             if not user.is_active:
-                return None, 'Account is deactivated. Please contact support.'
+                return None, "Account is deactivated. Please contact support."
 
             # Verify password
             if not user.check_password(password):
                 # Record failed login attempt
                 user.record_failed_login()
                 db.session.commit()
-                return None, 'Invalid username/email or password'
+                return None, "Invalid username/email or password"
 
             # Successful login - reset failed attempts
             user.reset_failed_logins()
             user.update_last_active()
             db.session.commit()
 
-            current_app.logger.info(f'User logged in: {user.username}')
+            current_app.logger.info(f"User logged in: {user.username}")
 
             return user, None
 
         except Exception as e:
-            current_app.logger.error(f'Authentication error: {e}')
-            return None, 'Login failed. Please try again.'
+            current_app.logger.error(f"Authentication error: {e}")
+            return None, "Login failed. Please try again."
 
     @staticmethod
     def verify_email(token):
@@ -135,20 +134,24 @@ class AuthService:
             user = User.query.filter_by(verification_token=token).first()
 
             if not user:
-                return False, 'Invalid or expired verification token'
+                return False, "Invalid or expired verification token"
+
+            # Check if already verified
+            if user.email_verified:
+                return False, "Email is already verified"
 
             # Mark email as verified
             user.verify_email()
             db.session.commit()
 
-            current_app.logger.info(f'Email verified for user: {user.username}')
+            current_app.logger.info(f"Email verified for user: {user.username}")
 
-            return True, 'Email verified successfully! You can now log in.'
+            return True, "Email verified successfully! You can now log in."
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f'Email verification error: {e}')
-            return False, 'Verification failed. Please try again.'
+            current_app.logger.error(f"Email verification error: {e}")
+            return False, "Verification failed. Please try again."
 
     @staticmethod
     def request_password_reset(email):
@@ -159,34 +162,34 @@ class AuthService:
             email: User's email address
 
         Returns:
-            tuple: (user, error_message)
-                user: User object if found, None if not found
-                error_message: None if successful, error string if failed
+            tuple: (success, message)
+                success: True if successful (always True for security)
+                message: Success message
 
         Note: For security, we don't reveal if email exists or not in the return value.
-              The calling code should always show success message.
+              Always returns success to prevent email enumeration.
         """
         try:
             # Find user by email
             user = User.query.filter_by(email=email).first()
 
-            if not user:
-                # Security: Don't reveal if email exists
-                # Just return None silently
-                return None, None
+            if user:
+                # Generate reset token
+                user.generate_reset_token(expires_in=3600)  # 1 hour expiration
+                db.session.commit()
 
-            # Generate reset token
-            user.generate_reset_token(expires_in=3600)  # 1 hour expiration
-            db.session.commit()
+                current_app.logger.info(f"Password reset requested for: {user.username}")
 
-            current_app.logger.info(f'Password reset requested for: {user.username}')
-
-            return user, None
+            # Always return success to prevent email enumeration
+            return (
+                True,
+                "If your email is registered, you will receive password reset instructions.",
+            )
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f'Password reset request error: {e}')
-            return None, 'Failed to process password reset request'
+            current_app.logger.error(f"Password reset request error: {e}")
+            return True, "Password reset request processed."
 
     @staticmethod
     def reset_password(token, new_password):
@@ -207,25 +210,25 @@ class AuthService:
             user = User.query.filter_by(password_reset_token=token).first()
 
             if not user:
-                return False, 'Invalid or expired reset token'
+                return False, "Invalid or expired reset token"
 
             # Verify token is not expired
             if not user.verify_reset_token(token):
-                return False, 'Reset token has expired. Please request a new one.'
+                return False, "Reset token has expired. Please request a new one."
 
             # Set new password
             user.set_password(new_password)
             user.clear_reset_token()
             db.session.commit()
 
-            current_app.logger.info(f'Password reset for user: {user.username}')
+            current_app.logger.info(f"Password reset for user: {user.username}")
 
-            return True, 'Password reset successfully! You can now log in with your new password.'
+            return True, "Password reset successfully! You can now log in with your new password."
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f'Password reset error: {e}')
-            return False, 'Password reset failed. Please try again.'
+            current_app.logger.error(f"Password reset error: {e}")
+            return False, "Password reset failed. Please try again."
 
     @staticmethod
     def change_password(user, current_password, new_password):
@@ -245,20 +248,20 @@ class AuthService:
         try:
             # Verify current password
             if not user.check_password(current_password):
-                return False, 'Current password is incorrect'
+                return False, "Current password is incorrect"
 
             # Set new password
             user.set_password(new_password)
             db.session.commit()
 
-            current_app.logger.info(f'Password changed for user: {user.username}')
+            current_app.logger.info(f"Password changed for user: {user.username}")
 
-            return True, 'Password changed successfully!'
+            return True, "Password changed successfully!"
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f'Password change error: {e}')
-            return False, 'Password change failed. Please try again.'
+            current_app.logger.error(f"Password change error: {e}")
+            return False, "Password change failed. Please try again."
 
     @staticmethod
     def update_profile(user, username, email):
@@ -280,7 +283,7 @@ class AuthService:
             if username != user.username:
                 existing_user = User.query.filter_by(username=username).first()
                 if existing_user:
-                    return False, 'Username already taken'
+                    return False, "Username already taken"
                 user.username = username
 
             # Check if email changed and is available
@@ -288,7 +291,7 @@ class AuthService:
             if email != user.email:
                 existing_user = User.query.filter_by(email=email).first()
                 if existing_user:
-                    return False, 'Email already registered'
+                    return False, "Email already registered"
                 user.email = email
                 user.email_verified = False  # Require re-verification
                 user.generate_verification_token()
@@ -296,17 +299,17 @@ class AuthService:
 
             db.session.commit()
 
-            current_app.logger.info(f'Profile updated for user: {user.username}')
+            current_app.logger.info(f"Profile updated for user: {user.username}")
 
             if email_changed:
-                return True, 'Profile updated successfully! Please verify your new email address.'
+                return True, "Profile updated successfully! Please verify your new email address."
             else:
-                return True, 'Profile updated successfully!'
+                return True, "Profile updated successfully!"
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f'Profile update error: {e}')
-            return False, 'Profile update failed. Please try again.'
+            current_app.logger.error(f"Profile update error: {e}")
+            return False, "Profile update failed. Please try again."
 
     @staticmethod
     def send_verification_email(user):
@@ -324,8 +327,8 @@ class AuthService:
         """
         # TODO: Implement actual email sending
         # For now, just log the verification URL
-        verification_url = f'/auth/verify/{user.verification_token}'
-        current_app.logger.info(f'Verification URL for {user.username}: {verification_url}')
+        verification_url = f"/auth/verify/{user.verification_token}"
+        current_app.logger.info(f"Verification URL for {user.username}: {verification_url}")
 
         # In production, send email here
         # Example:
@@ -352,8 +355,8 @@ class AuthService:
         """
         # TODO: Implement actual email sending
         # For now, just log the reset URL
-        reset_url = f'/auth/reset-password/{user.password_reset_token}'
-        current_app.logger.info(f'Password reset URL for {user.username}: {reset_url}')
+        reset_url = f"/auth/reset-password/{user.password_reset_token}"
+        current_app.logger.info(f"Password reset URL for {user.username}: {reset_url}")
 
         # In production, send email here
 

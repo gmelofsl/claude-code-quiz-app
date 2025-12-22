@@ -20,21 +20,20 @@ Usage:
     FLASK_ENV=production python scripts/migrate_sqlite_to_pg.py
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
-from datetime import datetime
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app import create_app
-from app.extensions import db
-from app.models import User, Quiz, Question, Attempt, UserAnswer
-
 # SQLAlchemy for reading old database
-from sqlalchemy import create_engine, MetaData, Table
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import MetaData, Table, create_engine  # noqa: E402
+from sqlalchemy.orm import sessionmaker  # noqa: E402
+
+from app import create_app  # noqa: E402
+from app.extensions import db  # noqa: E402
+from app.models import Attempt, Question, Quiz, User, UserAnswer  # noqa: E402
 
 
 class DataMigrator:
@@ -50,16 +49,10 @@ class DataMigrator:
         """
         self.old_db_path = old_db_path
         self.dry_run = dry_run
-        self.stats = {
-            'users': 0,
-            'quizzes': 0,
-            'questions': 0,
-            'attempts': 0,
-            'user_answers': 0
-        }
+        self.stats = {"users": 0, "quizzes": 0, "questions": 0, "attempts": 0, "user_answers": 0}
 
         # Connect to old database
-        old_db_uri = f'sqlite:///{old_db_path}'
+        old_db_uri = f"sqlite:///{old_db_path}"
         self.old_engine = create_engine(old_db_uri)
         self.old_metadata = MetaData()
         self.old_metadata.reflect(bind=self.old_engine)
@@ -113,6 +106,7 @@ class DataMigrator:
             db.session.rollback()
             print(f"\n❌ ERROR: Migration failed: {e}")
             import traceback
+
             traceback.print_exc()
             sys.exit(1)
 
@@ -120,7 +114,7 @@ class DataMigrator:
         """Migrate users from old to new schema."""
         print("\n👤 Migrating users...")
 
-        old_users_table = Table('users', self.old_metadata, autoload_with=self.old_engine)
+        old_users_table = Table("users", self.old_metadata, autoload_with=self.old_engine)
         old_users = self.old_session.execute(old_users_table.select()).fetchall()
 
         user_mapping = {}  # old_id -> new_user
@@ -135,17 +129,17 @@ class DataMigrator:
                 is_admin=False,
                 email_verified=False,  # Needs verification
                 created_at=old_user.created_at,
-                last_active=old_user.last_active
+                last_active=old_user.last_active,
             )
 
             db.session.add(new_user)
             db.session.flush()  # Get new user ID
 
             user_mapping[old_user.id] = new_user
-            self.stats['users'] += 1
+            self.stats["users"] += 1
 
         print(f"   ✓ Migrated {self.stats['users']} users")
-        print(f"   ⚠️  Note: Users will need to set passwords and verify emails on first login")
+        print("   ⚠️  Note: Users will need to set passwords and verify emails on first login")
 
         return user_mapping
 
@@ -153,7 +147,7 @@ class DataMigrator:
         """Migrate quizzes."""
         print("\n📚 Migrating quizzes...")
 
-        old_quizzes_table = Table('quizzes', self.old_metadata, autoload_with=self.old_engine)
+        old_quizzes_table = Table("quizzes", self.old_metadata, autoload_with=self.old_engine)
         old_quizzes = self.old_session.execute(old_quizzes_table.select()).fetchall()
 
         quiz_mapping = {}  # old_id -> new_quiz
@@ -163,15 +157,15 @@ class DataMigrator:
                 category=old_quiz.category,
                 title=old_quiz.title,
                 description=old_quiz.description,
-                icon=getattr(old_quiz, 'icon', '📝'),
-                created_at=old_quiz.created_at
+                icon=getattr(old_quiz, "icon", "📝"),
+                created_at=old_quiz.created_at,
             )
 
             db.session.add(new_quiz)
             db.session.flush()
 
             quiz_mapping[old_quiz.id] = new_quiz
-            self.stats['quizzes'] += 1
+            self.stats["quizzes"] += 1
 
         print(f"   ✓ Migrated {self.stats['quizzes']} quizzes")
 
@@ -181,14 +175,16 @@ class DataMigrator:
         """Migrate questions."""
         print("\n❓ Migrating questions...")
 
-        old_questions_table = Table('questions', self.old_metadata, autoload_with=self.old_engine)
+        old_questions_table = Table("questions", self.old_metadata, autoload_with=self.old_engine)
         old_questions = self.old_session.execute(old_questions_table.select()).fetchall()
 
         question_mapping = {}  # old_id -> new_question
 
         for old_question in old_questions:
             if old_question.quiz_id not in quiz_mapping:
-                print(f"   ⚠️  Skipping question {old_question.id}: quiz {old_question.quiz_id} not found")
+                print(
+                    f"   ⚠️  Skipping question {old_question.id}: quiz {old_question.quiz_id} not found"
+                )
                 continue
 
             new_question = Question(
@@ -201,14 +197,14 @@ class DataMigrator:
                 correct_answer=old_question.correct_answer,
                 explanation=old_question.explanation,
                 difficulty=old_question.difficulty,
-                order_index=old_question.order_index
+                order_index=old_question.order_index,
             )
 
             db.session.add(new_question)
             db.session.flush()
 
             question_mapping[old_question.id] = new_question
-            self.stats['questions'] += 1
+            self.stats["questions"] += 1
 
         print(f"   ✓ Migrated {self.stats['questions']} questions")
 
@@ -218,17 +214,21 @@ class DataMigrator:
         """Migrate attempts."""
         print("\n📝 Migrating attempts...")
 
-        old_attempts_table = Table('attempts', self.old_metadata, autoload_with=self.old_engine)
+        old_attempts_table = Table("attempts", self.old_metadata, autoload_with=self.old_engine)
         old_attempts = self.old_session.execute(old_attempts_table.select()).fetchall()
 
         attempt_mapping = {}  # old_id -> new_attempt
 
         for old_attempt in old_attempts:
             if old_attempt.user_id not in user_mapping:
-                print(f"   ⚠️  Skipping attempt {old_attempt.id}: user {old_attempt.user_id} not found")
+                print(
+                    f"   ⚠️  Skipping attempt {old_attempt.id}: user {old_attempt.user_id} not found"
+                )
                 continue
             if old_attempt.quiz_id not in quiz_mapping:
-                print(f"   ⚠️  Skipping attempt {old_attempt.id}: quiz {old_attempt.quiz_id} not found")
+                print(
+                    f"   ⚠️  Skipping attempt {old_attempt.id}: quiz {old_attempt.quiz_id} not found"
+                )
                 continue
 
             new_attempt = Attempt(
@@ -238,7 +238,7 @@ class DataMigrator:
                 completed_at=old_attempt.completed_at,
                 score=old_attempt.score,
                 total_questions=old_attempt.total_questions,
-                percentage=old_attempt.percentage
+                percentage=old_attempt.percentage,
             )
 
             # Calculate time_taken if both timestamps exist
@@ -250,7 +250,7 @@ class DataMigrator:
             db.session.flush()
 
             attempt_mapping[old_attempt.id] = new_attempt
-            self.stats['attempts'] += 1
+            self.stats["attempts"] += 1
 
         print(f"   ✓ Migrated {self.stats['attempts']} attempts")
 
@@ -260,7 +260,9 @@ class DataMigrator:
         """Migrate user answers."""
         print("\n✍️  Migrating user answers...")
 
-        old_user_answers_table = Table('user_answers', self.old_metadata, autoload_with=self.old_engine)
+        old_user_answers_table = Table(
+            "user_answers", self.old_metadata, autoload_with=self.old_engine
+        )
         old_user_answers = self.old_session.execute(old_user_answers_table.select()).fetchall()
 
         for old_answer in old_user_answers:
@@ -274,11 +276,11 @@ class DataMigrator:
                 question_id=question_mapping[old_answer.question_id].id,
                 selected_answer=old_answer.selected_answer,
                 is_correct=old_answer.is_correct,
-                answered_at=old_answer.answered_at
+                answered_at=old_answer.answered_at,
             )
 
             db.session.add(new_answer)
-            self.stats['user_answers'] += 1
+            self.stats["user_answers"] += 1
 
         print(f"   ✓ Migrated {self.stats['user_answers']} user answers")
 
@@ -287,9 +289,9 @@ def main():
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Migrate SQLite database to production schema')
-    parser.add_argument('--dry-run', action='store_true', help='Preview changes without committing')
-    parser.add_argument('--old-db', default='../quiz_app.db', help='Path to old SQLite database')
+    parser = argparse.ArgumentParser(description="Migrate SQLite database to production schema")
+    parser.add_argument("--dry-run", action="store_true", help="Preview changes without committing")
+    parser.add_argument("--old-db", default="../quiz_app.db", help="Path to old SQLite database")
     args = parser.parse_args()
 
     # Resolve old database path
@@ -301,7 +303,7 @@ def main():
         sys.exit(1)
 
     # Create app and run migration
-    env = os.environ.get('FLASK_ENV', 'development')
+    env = os.environ.get("FLASK_ENV", "development")
     app = create_app(env)
 
     with app.app_context():
@@ -309,5 +311,5 @@ def main():
         migrator.migrate()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

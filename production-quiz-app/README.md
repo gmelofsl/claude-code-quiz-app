@@ -1,5 +1,11 @@
 # Production Quiz App
 
+[![CI/CD Pipeline](https://github.com/YOUR-USERNAME/production-quiz-app/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/YOUR-USERNAME/production-quiz-app/actions)
+[![codecov](https://codecov.io/gh/YOUR-USERNAME/production-quiz-app/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR-USERNAME/production-quiz-app)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A production-ready Flask-based educational platform for testing knowledge of AI software development concepts.
 
 ## Features

@@ -5,11 +5,13 @@ These factories use Factory Boy and Faker to generate realistic test data
 for all models in the application.
 """
 
+from datetime import datetime, timedelta
+
 import factory
 from factory import fuzzy
-from datetime import datetime, timedelta
+
 from app.extensions import db
-from app.models import User, Quiz, Question, Attempt, UserAnswer
+from app.models import Attempt, Question, Quiz, User, UserAnswer
 
 
 class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -22,7 +24,7 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         abstract = True
         sqlalchemy_session = db.session
-        sqlalchemy_session_persistence = 'commit'
+        sqlalchemy_session_persistence = "commit"
 
 
 class UserFactory(BaseFactory):
@@ -38,9 +40,9 @@ class UserFactory(BaseFactory):
     class Meta:
         model = User
 
-    username = factory.Sequence(lambda n: f'user{n}')
-    email = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')
-    password_hash = factory.PostGenerationMethodCall('set_password', 'TestPass123')
+    username = factory.Sequence(lambda n: f"user{n}")
+    email = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
+    password_hash = factory.PostGenerationMethodCall("set_password", "TestPass123")
     is_active = True
     is_admin = False
     email_verified = True
@@ -61,8 +63,8 @@ class AdminUserFactory(UserFactory):
         admin = AdminUserFactory()
     """
 
-    username = factory.Sequence(lambda n: f'admin{n}')
-    email = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')
+    username = factory.Sequence(lambda n: f"admin{n}")
+    email = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
     is_admin = True
 
 
@@ -75,7 +77,7 @@ class UnverifiedUserFactory(UserFactory):
     """
 
     email_verified = False
-    verification_token = factory.Faker('uuid4')
+    verification_token = factory.Faker("uuid4")
 
 
 class LockedUserFactory(UserFactory):
@@ -87,9 +89,7 @@ class LockedUserFactory(UserFactory):
     """
 
     failed_login_attempts = 5
-    account_locked_until = factory.LazyFunction(
-        lambda: datetime.utcnow() + timedelta(minutes=15)
-    )
+    account_locked_until = factory.LazyFunction(lambda: datetime.utcnow() + timedelta(minutes=15))
 
 
 class QuizFactory(BaseFactory):
@@ -105,18 +105,18 @@ class QuizFactory(BaseFactory):
     class Meta:
         model = Quiz
 
-    category = factory.Iterator([
-        'Agent Fundamentals',
-        'Prompt Engineering',
-        'Model Selection & Context Management',
-        'Python Programming',
-        'Web Development',
-        'Data Science'
-    ])
-    description = factory.LazyAttribute(
-        lambda obj: f'Test your knowledge of {obj.category}'
+    category = factory.Iterator(
+        [
+            "Agent Fundamentals",
+            "Prompt Engineering",
+            "Model Selection & Context Management",
+            "Python Programming",
+            "Web Development",
+            "Data Science",
+        ]
     )
-    icon = factory.Iterator(['robot', 'pencil', 'target', 'code', 'web', 'chart'])
+    description = factory.LazyAttribute(lambda obj: f"Test your knowledge of {obj.category}")
+    icon = factory.Iterator(["robot", "pencil", "target", "code", "web", "chart"])
     total_questions = 10
     is_active = True
     time_limit_minutes = None
@@ -149,30 +149,33 @@ class QuestionFactory(BaseFactory):
 
     quiz = factory.SubFactory(QuizFactory)
     quiz_id = factory.LazyAttribute(lambda obj: obj.quiz.id)
-    question = factory.Faker('sentence', nb_words=10)
-    option_1 = factory.Faker('word')
-    option_2 = factory.Faker('word')
-    option_3 = factory.Faker('word')
-    option_4 = factory.Faker('word')
+    question = factory.Faker("sentence", nb_words=10)
+    option_1 = factory.Faker("word")
+    option_2 = factory.Faker("word")
+    option_3 = factory.Faker("word")
+    option_4 = factory.Faker("word")
     correct_answer = fuzzy.FuzzyChoice([0, 1, 2, 3])
-    difficulty = fuzzy.FuzzyChoice(['easy', 'medium', 'hard'])
-    explanation = factory.Faker('sentence', nb_words=15)
+    difficulty = fuzzy.FuzzyChoice(["easy", "medium", "hard"])
+    explanation = factory.Faker("sentence", nb_words=15)
     order_index = factory.Sequence(lambda n: n)
 
 
 class EasyQuestionFactory(QuestionFactory):
     """Factory for creating easy Question instances."""
-    difficulty = 'easy'
+
+    difficulty = "easy"
 
 
 class MediumQuestionFactory(QuestionFactory):
     """Factory for creating medium Question instances."""
-    difficulty = 'medium'
+
+    difficulty = "medium"
 
 
 class HardQuestionFactory(QuestionFactory):
     """Factory for creating hard Question instances."""
-    difficulty = 'hard'
+
+    difficulty = "hard"
 
 
 class AttemptFactory(BaseFactory):
@@ -209,13 +212,13 @@ class AttemptFactory(BaseFactory):
             Completed Attempt instance
         """
         # Default values for completed attempt
-        if 'score' not in kwargs:
-            kwargs['score'] = fuzzy.FuzzyInteger(0, 10).fuzz()
-        if 'time_taken' not in kwargs:
-            kwargs['time_taken'] = fuzzy.FuzzyInteger(60, 1800).fuzz()  # 1-30 mins
+        if "score" not in kwargs:
+            kwargs["score"] = fuzzy.FuzzyInteger(0, 10).fuzz()
+        if "time_taken" not in kwargs:
+            kwargs["time_taken"] = fuzzy.FuzzyInteger(60, 1800).fuzz()  # 1-30 mins
 
         attempt = cls(**kwargs)
-        attempt.complete(score=kwargs['score'], time_taken=kwargs.get('time_taken'))
+        attempt.complete(score=kwargs["score"], time_taken=kwargs.get("time_taken"))
 
         return attempt
 
@@ -230,10 +233,10 @@ class AttemptFactory(BaseFactory):
         Returns:
             In-progress Attempt instance
         """
-        kwargs['score'] = None
-        kwargs['percentage'] = None
-        kwargs['completed_at'] = None
-        kwargs['time_taken'] = None
+        kwargs["score"] = None
+        kwargs["percentage"] = None
+        kwargs["completed_at"] = None
+        kwargs["time_taken"] = None
 
         return cls(**kwargs)
 
@@ -285,12 +288,12 @@ class UserAnswerFactory(BaseFactory):
         Returns:
             Correct UserAnswer instance
         """
-        question = kwargs.get('question')
+        question = kwargs.get("question")
         if not question:
-            raise ValueError('question is required for create_correct')
+            raise ValueError("question is required for create_correct")
 
-        kwargs['selected_answer'] = question.correct_answer
-        kwargs['is_correct'] = True
+        kwargs["selected_answer"] = question.correct_answer
+        kwargs["is_correct"] = True
 
         return cls(**kwargs)
 
@@ -305,19 +308,20 @@ class UserAnswerFactory(BaseFactory):
         Returns:
             Incorrect UserAnswer instance
         """
-        question = kwargs.get('question')
+        question = kwargs.get("question")
         if not question:
-            raise ValueError('question is required for create_incorrect')
+            raise ValueError("question is required for create_incorrect")
 
         # Select wrong answer
         wrong_answers = [i for i in range(4) if i != question.correct_answer]
-        kwargs['selected_answer'] = wrong_answers[0]
-        kwargs['is_correct'] = False
+        kwargs["selected_answer"] = wrong_answers[0]
+        kwargs["is_correct"] = False
 
         return cls(**kwargs)
 
 
 # Helper functions for common test data scenarios
+
 
 def create_quiz_with_questions(num_questions=10, **quiz_kwargs):
     """
@@ -366,15 +370,9 @@ def create_completed_quiz_attempt(user, quiz, score=None):
     answers = []
     for i, question in enumerate(questions):
         if i < score:
-            answer = UserAnswerFactory.create_correct(
-                attempt=attempt,
-                question=question
-            )
+            answer = UserAnswerFactory.create_correct(attempt=attempt, question=question)
         else:
-            answer = UserAnswerFactory.create_incorrect(
-                attempt=attempt,
-                question=question
-            )
+            answer = UserAnswerFactory.create_incorrect(attempt=attempt, question=question)
         answers.append(answer)
 
     # Complete attempt
@@ -400,7 +398,7 @@ def create_user_with_history(num_attempts=5):
     attempts = []
     for i in range(num_attempts):
         quiz = quizzes[i % len(quizzes)]
-        questions = QuestionFactory.create_batch(10, quiz=quiz)
+        _ = QuestionFactory.create_batch(10, quiz=quiz)  # Create questions for quiz
         quiz.total_questions = 10
         db.session.commit()
 

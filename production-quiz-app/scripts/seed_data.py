@@ -12,18 +12,17 @@ Options:
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Add parent directory to path so we can import app
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app import create_app
-from app.extensions import db
-from app.models import Quiz, Question
+from app import create_app  # noqa: E402
+from app.extensions import db  # noqa: E402
+from app.models import Question, Quiz  # noqa: E402
 
 # Import quiz data from original location
-original_quiz_data_path = Path(__file__).parent.parent.parent / 'quiz_data.py'
+original_quiz_data_path = Path(__file__).parent.parent.parent / "quiz_data.py"
 if original_quiz_data_path.exists():
     sys.path.insert(0, str(original_quiz_data_path.parent))
     from quiz_data import QUIZ_DATA
@@ -34,21 +33,21 @@ else:
 
 # Quiz metadata by category
 QUIZ_CATEGORIES = {
-    'Agent Fundamentals': {
-        'title': 'Agent Fundamentals',
-        'description': 'Test your knowledge of AI agent architecture, patterns, and design principles.',
-        'icon': '🤖'
+    "Agent Fundamentals": {
+        "title": "Agent Fundamentals",
+        "description": "Test your knowledge of AI agent architecture, patterns, and design principles.",
+        "icon": "🤖",
     },
-    'Prompt Engineering': {
-        'title': 'Prompt Engineering',
-        'description': 'Master the art of crafting effective prompts for large language models.',
-        'icon': '✍️'
+    "Prompt Engineering": {
+        "title": "Prompt Engineering",
+        "description": "Master the art of crafting effective prompts for large language models.",
+        "icon": "✍️",
     },
-    'Model Selection & Context Management': {
-        'title': 'Model Selection & Context Management',
-        'description': 'Learn about choosing the right models and managing context windows effectively.',
-        'icon': '🎯'
-    }
+    "Model Selection & Context Management": {
+        "title": "Model Selection & Context Management",
+        "description": "Learn about choosing the right models and managing context windows effectively.",
+        "icon": "🎯",
+    },
 }
 
 
@@ -74,9 +73,9 @@ def seed_quizzes():
     for category, metadata in QUIZ_CATEGORIES.items():
         quiz = Quiz(
             category=category,
-            title=metadata['title'],
-            description=metadata['description'],
-            icon=metadata.get('icon', '*')
+            title=metadata["title"],
+            description=metadata["description"],
+            icon=metadata.get("icon", "*"),
         )
         db.session.add(quiz)
         quizzes[category] = quiz
@@ -93,7 +92,7 @@ def seed_questions(quizzes):
     # Group questions by category
     questions_by_category = {}
     for question_data in QUIZ_DATA:
-        category = question_data['category']
+        category = question_data["category"]
         if category not in questions_by_category:
             questions_by_category[category] = []
         questions_by_category[category].append(question_data)
@@ -109,15 +108,15 @@ def seed_questions(quizzes):
         for idx, question_data in enumerate(questions_list):
             question = Question(
                 quiz_id=quiz.id,
-                question_text=question_data['question'],
-                option_1=question_data['options'][0],
-                option_2=question_data['options'][1],
-                option_3=question_data['options'][2],
-                option_4=question_data['options'][3],
-                correct_answer=question_data['correct'],
-                explanation=question_data['explanation'],
-                difficulty=question_data['difficulty'],
-                order_index=idx
+                question_text=question_data["question"],
+                option_1=question_data["options"][0],
+                option_2=question_data["options"][1],
+                option_3=question_data["options"][2],
+                option_4=question_data["options"][3],
+                correct_answer=question_data["correct"],
+                explanation=question_data["explanation"],
+                difficulty=question_data["difficulty"],
+                order_index=idx,
             )
             db.session.add(question)
             total_questions += 1
@@ -133,12 +132,15 @@ def seed_database(clear_existing=False):
     print("DATABASE SEEDING SCRIPT")
     print("=" * 60)
 
-    app = create_app('development')
+    app = create_app("development")
 
     with app.app_context():
         # Clear existing data if requested
         if clear_existing:
-            if input("\nWARNING: Are you sure you want to clear all quiz data? (yes/no): ").lower() != 'yes':
+            if (
+                input("\nWARNING: Are you sure you want to clear all quiz data? (yes/no): ").lower()
+                != "yes"
+            ):
                 print("Aborted.")
                 return
             clear_quiz_data()
@@ -148,7 +150,7 @@ def seed_database(clear_existing=False):
         if existing_quiz_count > 0 and not clear_existing:
             print(f"\nWARNING: {existing_quiz_count} quiz(zes) already exist in the database.")
             response = input("Continue anyway? This may create duplicates. (yes/no): ")
-            if response.lower() != 'yes':
+            if response.lower() != "yes":
                 print("Aborted.")
                 return
 
@@ -175,7 +177,7 @@ def seed_database(clear_existing=False):
 
 def main():
     """Main entry point."""
-    clear_existing = '--clear' in sys.argv
+    clear_existing = "--clear" in sys.argv
 
     try:
         seed_database(clear_existing=clear_existing)
@@ -185,9 +187,10 @@ def main():
     except Exception as e:
         print(f"\n[ERROR] {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

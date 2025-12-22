@@ -3,6 +3,7 @@ Quiz model for managing quiz categories and metadata.
 """
 
 from datetime import datetime
+
 from app.extensions import db
 
 
@@ -13,7 +14,8 @@ class Quiz(db.Model):
     Each quiz represents a category (e.g., "Agent Fundamentals", "Prompt Engineering")
     and contains multiple questions.
     """
-    __tablename__ = 'quizzes'
+
+    __tablename__ = "quizzes"
 
     # Primary key
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -23,26 +25,31 @@ class Quiz(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     icon = db.Column(db.String(10), nullable=True)  # Emoji or icon identifier
+    total_questions = db.Column(db.Integer, default=0, nullable=False)  # Cached question count
 
     # Metadata
-    is_active = db.Column(db.Boolean, default=True, nullable=False)  # For enabling/disabling quizzes
-    time_limit_minutes = db.Column(db.Integer, nullable=True)  # Optional time limit for timed quizzes
+    is_active = db.Column(
+        db.Boolean, default=True, nullable=False
+    )  # For enabling/disabling quizzes
+    time_limit_minutes = db.Column(
+        db.Integer, nullable=True
+    )  # Optional time limit for timed quizzes
 
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
-    questions = db.relationship('Question', backref='quiz', lazy=True, cascade='all, delete-orphan')
-    attempts = db.relationship('Attempt', backref='quiz', lazy=True, cascade='all, delete-orphan')
+    questions = db.relationship("Question", backref="quiz", lazy=True, cascade="all, delete-orphan")
+    attempts = db.relationship("Attempt", backref="quiz", lazy=True, cascade="all, delete-orphan")
 
     # Indexes and constraints
     __table_args__ = (
-        db.Index('idx_quiz_category', 'category'),
-        db.UniqueConstraint('category', name='uq_quiz_category'),
+        db.Index("idx_quiz_category", "category"),
+        db.UniqueConstraint("category", name="uq_quiz_category"),
     )
 
     def __repr__(self):
-        return f'<Quiz {self.title}>'
+        return f"<Quiz {self.title}>"
 
     def get_question_count(self):
         """
@@ -88,12 +95,12 @@ class Quiz(db.Model):
             dict: Quiz information
         """
         return {
-            'id': self.id,
-            'category': self.category,
-            'title': self.title,
-            'description': self.description,
-            'icon': self.icon,
-            'question_count': self.get_question_count(),
-            'is_active': self.is_active,
-            'time_limit_minutes': self.time_limit_minutes,
+            "id": self.id,
+            "category": self.category,
+            "title": self.title,
+            "description": self.description,
+            "icon": self.icon,
+            "question_count": self.get_question_count(),
+            "is_active": self.is_active,
+            "time_limit_minutes": self.time_limit_minutes,
         }

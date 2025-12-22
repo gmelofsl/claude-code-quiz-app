@@ -2,10 +2,11 @@
 User model with enhanced authentication and security features.
 """
 
-from datetime import datetime, timedelta
 import secrets
+from datetime import datetime, timedelta
+
 from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.extensions import db
 
@@ -17,7 +18,8 @@ class User(UserMixin, db.Model):
     Enhanced with email authentication, password hashing, email verification,
     password reset, and account security features.
     """
-    __tablename__ = 'users'
+
+    __tablename__ = "users"
 
     # Primary key
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -27,7 +29,9 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
 
     # Authentication
-    password_hash = db.Column(db.String(255), nullable=True)  # Nullable for migration from old users
+    password_hash = db.Column(
+        db.String(255), nullable=True
+    )  # Nullable for migration from old users
 
     # Account status
     is_active = db.Column(db.Boolean, default=True, nullable=False)
@@ -47,21 +51,23 @@ class User(UserMixin, db.Model):
 
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    last_active = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    last_active = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     # Relationships
-    attempts = db.relationship('Attempt', backref='user', lazy=True, cascade='all, delete-orphan')
+    attempts = db.relationship("Attempt", backref="user", lazy=True, cascade="all, delete-orphan")
 
     # Indexes and constraints
     __table_args__ = (
-        db.Index('idx_user_username', 'username'),
-        db.Index('idx_user_email', 'email'),
-        db.Index('idx_user_last_active', 'last_active'),
-        db.CheckConstraint('failed_login_attempts >= 0', name='check_failed_attempts_positive'),
+        db.Index("idx_user_username", "username"),
+        db.Index("idx_user_email", "email"),
+        db.Index("idx_user_last_active", "last_active"),
+        db.CheckConstraint("failed_login_attempts >= 0", name="check_failed_attempts_positive"),
     )
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f"<User {self.username}>"
 
     # Password management
     def set_password(self, password):
@@ -73,7 +79,7 @@ class User(UserMixin, db.Model):
         """
         # Using Werkzeug's generate_password_hash with 'argon2' method
         # This uses argon2-cffi under the hood if installed
-        self.password_hash = generate_password_hash(password, method='pbkdf2:sha256')
+        self.password_hash = generate_password_hash(password, method="pbkdf2:sha256")
         # Note: To use argon2, install argon2-cffi and use method='argon2'
         # For now using pbkdf2:sha256 for compatibility
 
@@ -196,25 +202,17 @@ class User(UserMixin, db.Model):
             dict: Statistics including total_attempts, avg_score, best_score
         """
         if not self.attempts:
-            return {
-                'total_attempts': 0,
-                'avg_score': 0,
-                'best_score': 0
-            }
+            return {"total_attempts": 0, "avg_score": 0, "best_score": 0}
 
         completed_attempts = [a for a in self.attempts if a.completed_at is not None]
         if not completed_attempts:
-            return {
-                'total_attempts': 0,
-                'avg_score': 0,
-                'best_score': 0
-            }
+            return {"total_attempts": 0, "avg_score": 0, "best_score": 0}
 
         percentages = [a.percentage for a in completed_attempts]
         return {
-            'total_attempts': len(completed_attempts),
-            'avg_score': round(sum(percentages) / len(percentages), 1),
-            'best_score': round(max(percentages), 1)
+            "total_attempts": len(completed_attempts),
+            "avg_score": round(sum(percentages) / len(percentages), 1),
+            "best_score": round(max(percentages), 1),
         }
 
     # Flask-Login required methods

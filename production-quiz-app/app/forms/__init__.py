@@ -5,19 +5,19 @@ Imports all form classes for easy access.
 """
 
 from app.forms.auth_forms import (
-    RegistrationForm,
-    LoginForm,
-    ForgotPasswordForm,
-    ResetPasswordForm,
     ChangePasswordForm,
-    UpdateProfileForm
+    ForgotPasswordForm,
+    LoginForm,
+    RegistrationForm,
+    ResetPasswordForm,
+    UpdateProfileForm,
 )
 
 __all__ = [
-    'RegistrationForm',
-    'LoginForm',
-    'ForgotPasswordForm',
-    'ResetPasswordForm',
-    'ChangePasswordForm',
-    'UpdateProfileForm',
+    "RegistrationForm",
+    "LoginForm",
+    "ForgotPasswordForm",
+    "ResetPasswordForm",
+    "ChangePasswordForm",
+    "UpdateProfileForm",
 ]

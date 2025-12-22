@@ -5,14 +5,16 @@ This module provides reusable test fixtures for the entire test suite.
 """
 
 import os
+
 import pytest
 from flask import session
+
 from app import create_app
 from app.extensions import db
-from app.models import User, Quiz, Question, Attempt, UserAnswer
+from app.models import Attempt, Question, Quiz, User, UserAnswer
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def app():
     """
     Create and configure a Flask application for testing.
@@ -21,10 +23,10 @@ def app():
     Scope: session (created once per test session)
     """
     # Set testing environment
-    os.environ['FLASK_ENV'] = 'testing'
+    os.environ["FLASK_ENV"] = "testing"
 
     # Create app with testing config
-    app = create_app('testing')
+    app = create_app("testing")
 
     # Establish application context
     with app.app_context():
@@ -38,7 +40,7 @@ def app():
         db.drop_all()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def client(app):
     """
     Create a Flask test client.
@@ -48,7 +50,7 @@ def client(app):
     return app.test_client()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def runner(app):
     """
     Create a Flask CLI test runner.
@@ -58,7 +60,7 @@ def runner(app):
     return app.test_cli_runner()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def db_session(app):
     """
     Create a database session for testing with transaction rollback.
@@ -84,7 +86,7 @@ def db_session(app):
         connection.close()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def sample_user(app):
     """
     Create a sample verified user for testing.
@@ -98,12 +100,9 @@ def sample_user(app):
     """
     with app.app_context():
         user = User(
-            username='testuser',
-            email='testuser@example.com',
-            is_active=True,
-            email_verified=True
+            username="testuser", email="testuser@example.com", is_active=True, email_verified=True
         )
-        user.set_password('TestPass123')
+        user.set_password("TestPass123")
         db.session.add(user)
         db.session.commit()
 
@@ -117,7 +116,7 @@ def sample_user(app):
         db.session.commit()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def sample_admin_user(app):
     """
     Create a sample admin user for testing.
@@ -126,13 +125,13 @@ def sample_admin_user(app):
     """
     with app.app_context():
         user = User(
-            username='adminuser',
-            email='admin@example.com',
+            username="adminuser",
+            email="admin@example.com",
             is_active=True,
             is_admin=True,
-            email_verified=True
+            email_verified=True,
         )
-        user.set_password('AdminPass123')
+        user.set_password("AdminPass123")
         db.session.add(user)
         db.session.commit()
 
@@ -144,7 +143,7 @@ def sample_admin_user(app):
         db.session.commit()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def sample_quiz(app):
     """
     Create a sample quiz with questions for testing.
@@ -154,11 +153,11 @@ def sample_quiz(app):
     with app.app_context():
         # Create quiz
         quiz = Quiz(
-            category='Test Category',
-            description='A test quiz for testing purposes',
-            icon='test-icon',
+            category="Test Category",
+            description="A test quiz for testing purposes",
+            icon="test-icon",
             total_questions=5,
-            is_active=True
+            is_active=True,
         )
         db.session.add(quiz)
         db.session.flush()  # Get quiz ID without committing
@@ -166,54 +165,54 @@ def sample_quiz(app):
         # Create questions
         questions_data = [
             {
-                'question': 'What is 2 + 2?',
-                'options': ['3', '4', '5', '6'],
-                'correct': 1,
-                'difficulty': 'easy',
-                'explanation': 'Basic arithmetic: 2 + 2 = 4'
+                "question": "What is 2 + 2?",
+                "options": ["3", "4", "5", "6"],
+                "correct": 1,
+                "difficulty": "easy",
+                "explanation": "Basic arithmetic: 2 + 2 = 4",
             },
             {
-                'question': 'What is the capital of France?',
-                'options': ['London', 'Berlin', 'Paris', 'Madrid'],
-                'correct': 2,
-                'difficulty': 'easy',
-                'explanation': 'Paris is the capital of France'
+                "question": "What is the capital of France?",
+                "options": ["London", "Berlin", "Paris", "Madrid"],
+                "correct": 2,
+                "difficulty": "easy",
+                "explanation": "Paris is the capital of France",
             },
             {
-                'question': 'What is 15 * 8?',
-                'options': ['110', '115', '120', '125'],
-                'correct': 2,
-                'difficulty': 'medium',
-                'explanation': '15 * 8 = 120'
+                "question": "What is 15 * 8?",
+                "options": ["110", "115", "120", "125"],
+                "correct": 2,
+                "difficulty": "medium",
+                "explanation": "15 * 8 = 120",
             },
             {
-                'question': 'What is the square root of 144?',
-                'options': ['10', '11', '12', '13'],
-                'correct': 2,
-                'difficulty': 'medium',
-                'explanation': 'The square root of 144 is 12'
+                "question": "What is the square root of 144?",
+                "options": ["10", "11", "12", "13"],
+                "correct": 2,
+                "difficulty": "medium",
+                "explanation": "The square root of 144 is 12",
             },
             {
-                'question': 'What is the derivative of x^2?',
-                'options': ['x', '2x', 'x^2', '2'],
-                'correct': 1,
-                'difficulty': 'hard',
-                'explanation': 'The derivative of x^2 is 2x'
-            }
+                "question": "What is the derivative of x^2?",
+                "options": ["x", "2x", "x^2", "2"],
+                "correct": 1,
+                "difficulty": "hard",
+                "explanation": "The derivative of x^2 is 2x",
+            },
         ]
 
         for i, q_data in enumerate(questions_data):
             question = Question(
                 quiz_id=quiz.id,
-                question=q_data['question'],
-                option_1=q_data['options'][0],
-                option_2=q_data['options'][1],
-                option_3=q_data['options'][2],
-                option_4=q_data['options'][3],
-                correct_answer=q_data['correct'],
-                difficulty=q_data['difficulty'],
-                explanation=q_data['explanation'],
-                order_index=i
+                question=q_data["question"],
+                option_1=q_data["options"][0],
+                option_2=q_data["options"][1],
+                option_3=q_data["options"][2],
+                option_4=q_data["options"][3],
+                correct_answer=q_data["correct"],
+                difficulty=q_data["difficulty"],
+                explanation=q_data["explanation"],
+                order_index=i,
             )
             db.session.add(question)
 
@@ -227,7 +226,7 @@ def sample_quiz(app):
         db.session.commit()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def auth_headers(client, sample_user):
     """
     Create authentication headers for API testing.
@@ -236,13 +235,13 @@ def auth_headers(client, sample_user):
     """
     # Login user
     with client.session_transaction() as sess:
-        sess['user_id'] = sample_user.id
-        sess['username'] = sample_user.username
+        sess["user_id"] = sample_user.id
+        sess["username"] = sample_user.username
 
-    return {'Content-Type': 'application/json'}
+    return {"Content-Type": "application/json"}
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def completed_attempt(app, sample_user, sample_quiz):
     """
     Create a completed quiz attempt for testing.
@@ -251,10 +250,7 @@ def completed_attempt(app, sample_user, sample_quiz):
     """
     with app.app_context():
         # Create attempt
-        attempt = Attempt(
-            user_id=sample_user.id,
-            quiz_id=sample_quiz.id
-        )
+        attempt = Attempt(user_id=sample_user.id, quiz_id=sample_quiz.id)
         db.session.add(attempt)
         db.session.flush()
 
@@ -271,7 +267,7 @@ def completed_attempt(app, sample_user, sample_quiz):
                 attempt_id=attempt.id,
                 question_id=question.id,
                 selected_answer=selected,
-                is_correct=is_correct
+                is_correct=is_correct,
             )
             db.session.add(answer)
 
@@ -289,7 +285,7 @@ def completed_attempt(app, sample_user, sample_quiz):
         # Cleanup handled by cascade delete from sample_user
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def in_progress_attempt(app, sample_user, sample_quiz):
     """
     Create an in-progress quiz attempt for testing.
@@ -297,10 +293,7 @@ def in_progress_attempt(app, sample_user, sample_quiz):
     Returns an Attempt object that is not yet completed.
     """
     with app.app_context():
-        attempt = Attempt(
-            user_id=sample_user.id,
-            quiz_id=sample_quiz.id
-        )
+        attempt = Attempt(user_id=sample_user.id, quiz_id=sample_quiz.id)
         db.session.add(attempt)
         db.session.commit()
         db.session.refresh(attempt)
@@ -313,11 +306,17 @@ def in_progress_attempt(app, sample_user, sample_quiz):
 @pytest.fixture(autouse=True)
 def reset_db_session(app):
     """
-    Automatically reset database session after each test.
+    Automatically reset database session and clear data after each test.
 
-    This fixture runs automatically for every test.
+    This fixture runs automatically for every test to ensure clean state.
     """
     yield
 
     with app.app_context():
         db.session.remove()
+        # Clear all tables except migrations (if using Alembic)
+        # This ensures each test starts with clean database
+        db.session.rollback()
+        for table in reversed(db.metadata.sorted_tables):
+            db.session.execute(table.delete())
+        db.session.commit()

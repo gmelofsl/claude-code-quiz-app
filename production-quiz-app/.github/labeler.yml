@@ -1,0 +1,75 @@
+# Configuration for PR labeler
+# Labels PRs based on file paths changed
+
+# Documentation
+documentation:
+  - '**/*.md'
+  - 'docs/**/*'
+  - '*.md'
+
+# Tests
+tests:
+  - 'tests/**/*'
+  - '**/*test*.py'
+  - '**/*_test.py'
+
+# Models
+models:
+  - 'app/models/**/*'
+
+# Routes
+routes:
+  - 'app/routes/**/*'
+
+# Services
+services:
+  - 'app/services/**/*'
+
+# Forms
+forms:
+  - 'app/forms/**/*'
+
+# Templates
+templates:
+  - 'app/templates/**/*'
+
+# Static files
+static:
+  - 'app/static/**/*'
+
+# Configuration
+config:
+  - 'app/config.py'
+  - '**/*.yml'
+  - '**/*.yaml'
+  - '**/*.toml'
+  - '**/*.ini'
+  - '**/*.env*'
+
+# Database
+database:
+  - 'migrations/**/*'
+  - 'scripts/*migrate*.py'
+  - 'scripts/*seed*.py'
+
+# CI/CD
+ci-cd:
+  - '.github/**/*'
+  - 'deployment/**/*'
+  - 'Dockerfile'
+  - 'docker-compose*.yml'
+
+# Dependencies
+dependencies:
+  - 'requirements/**/*'
+  - '**/requirements*.txt'
+  - 'pyproject.toml'
+  - 'setup.py'
+  - 'setup.cfg'
+
+# Security
+security:
+  - 'app/services/auth_service.py'
+  - 'app/routes/auth.py'
+  - 'app/models/user.py'
+  - 'app/forms/auth_forms.py'

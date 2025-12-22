@@ -3,6 +3,7 @@ UserAnswer model for storing individual question answers.
 """
 
 from datetime import datetime
+
 from app.extensions import db
 
 
@@ -12,14 +13,15 @@ class UserAnswer(db.Model):
 
     Each record represents one question answered in one attempt.
     """
-    __tablename__ = 'user_answers'
+
+    __tablename__ = "user_answers"
 
     # Primary key
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     # Foreign keys
-    attempt_id = db.Column(db.Integer, db.ForeignKey('attempts.id'), nullable=False, index=True)
-    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False, index=True)
+    attempt_id = db.Column(db.Integer, db.ForeignKey("attempts.id"), nullable=False, index=True)
+    question_id = db.Column(db.Integer, db.ForeignKey("questions.id"), nullable=False, index=True)
 
     # Answer data
     selected_answer = db.Column(db.Integer, nullable=True)  # 0-3 index, NULL if unanswered/skipped
@@ -31,16 +33,14 @@ class UserAnswer(db.Model):
     # Indexes and constraints
     __table_args__ = (
         # Indexes for query performance
-        db.Index('idx_user_answer_attempt_id', 'attempt_id'),
-        db.Index('idx_user_answer_question_id', 'question_id'),
-
+        db.Index("idx_user_answer_attempt_id", "attempt_id"),
+        db.Index("idx_user_answer_question_id", "question_id"),
         # Unique constraint to prevent duplicate answers
-        db.UniqueConstraint('attempt_id', 'question_id', name='uq_attempt_question'),
-
+        db.UniqueConstraint("attempt_id", "question_id", name="uq_attempt_question"),
         # Data validation constraint
         db.CheckConstraint(
-            'selected_answer IS NULL OR (selected_answer >= 0 AND selected_answer <= 3)',
-            name='check_selected_answer_range'
+            "selected_answer IS NULL OR (selected_answer >= 0 AND selected_answer <= 3)",
+            name="check_selected_answer_range",
         ),
     )
 
@@ -55,14 +55,14 @@ class UserAnswer(db.Model):
             str: Text of the selected answer or 'No answer' if not answered
         """
         if self.selected_answer is None:
-            return 'No answer'
+            return "No answer"
 
         if self.question:
             options = self.question.get_options_list()
             if 0 <= self.selected_answer < len(options):
                 return options[self.selected_answer]
 
-        return f'Option {self.selected_answer + 1}'
+        return f"Option {self.selected_answer + 1}"
 
     def get_correct_option_text(self):
         """
@@ -73,7 +73,7 @@ class UserAnswer(db.Model):
         """
         if self.question:
             return self.question.get_correct_option_text()
-        return 'Unknown'
+        return "Unknown"
 
     def to_dict(self):
         """
@@ -83,10 +83,10 @@ class UserAnswer(db.Model):
             dict: User answer information
         """
         return {
-            'id': self.id,
-            'attempt_id': self.attempt_id,
-            'question_id': self.question_id,
-            'selected_answer': self.selected_answer,
-            'is_correct': self.is_correct,
-            'answered_at': self.answered_at.isoformat() if self.answered_at else None,
+            "id": self.id,
+            "attempt_id": self.attempt_id,
+            "question_id": self.question_id,
+            "selected_answer": self.selected_answer,
+            "is_correct": self.is_correct,
+            "answered_at": self.answered_at.isoformat() if self.answered_at else None,
         }

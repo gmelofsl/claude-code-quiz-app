@@ -4,14 +4,20 @@ Unit tests for database models.
 Tests model methods, properties, and relationships.
 """
 
-import pytest
 from datetime import datetime, timedelta
-from app.models import User, Quiz, Question, Attempt, UserAnswer
+
+import pytest
+
 from app.extensions import db
+from app.models import Attempt, Question, Quiz, User, UserAnswer
 from tests.factories import (
-    UserFactory, QuizFactory, QuestionFactory,
-    AttemptFactory, UserAnswerFactory,
-    create_quiz_with_questions, create_completed_quiz_attempt
+    AttemptFactory,
+    QuestionFactory,
+    QuizFactory,
+    UserAnswerFactory,
+    UserFactory,
+    create_completed_quiz_attempt,
+    create_quiz_with_questions,
 )
 
 
@@ -36,29 +42,29 @@ class TestUserModel:
         """Test password hashing."""
         with app.app_context():
             user = UserFactory()
-            user.set_password('NewPassword123')
+            user.set_password("NewPassword123")
 
             assert user.password_hash is not None
-            assert user.password_hash != 'NewPassword123'
+            assert user.password_hash != "NewPassword123"
             assert len(user.password_hash) > 20
 
     def test_check_password_correct(self, app):
         """Test checking correct password."""
         with app.app_context():
             user = UserFactory()
-            user.set_password('TestPass123')
+            user.set_password("TestPass123")
             db.session.commit()
 
-            assert user.check_password('TestPass123') is True
+            assert user.check_password("TestPass123") is True
 
     def test_check_password_incorrect(self, app):
         """Test checking incorrect password."""
         with app.app_context():
             user = UserFactory()
-            user.set_password('TestPass123')
+            user.set_password("TestPass123")
             db.session.commit()
 
-            assert user.check_password('WrongPassword') is False
+            assert user.check_password("WrongPassword") is False
 
     def test_check_password_no_hash(self, app):
         """Test checking password when no hash exists."""
@@ -67,7 +73,7 @@ class TestUserModel:
             db.session.add(user)
             db.session.commit()
 
-            assert user.check_password('AnyPassword') is False
+            assert user.check_password("AnyPassword") is False
 
     def test_generate_verification_token(self, app):
         """Test generating email verification token."""
@@ -107,7 +113,7 @@ class TestUserModel:
             user.generate_reset_token()
             db.session.commit()
 
-            assert user.verify_reset_token('wrong_token') is False
+            assert user.verify_reset_token("wrong_token") is False
 
     def test_verify_reset_token_expired(self, app):
         """Test verifying expired reset token."""
@@ -144,7 +150,7 @@ class TestUserModel:
         with app.app_context():
             user = UserFactory(
                 failed_login_attempts=3,
-                account_locked_until=datetime.utcnow() + timedelta(minutes=15)
+                account_locked_until=datetime.utcnow() + timedelta(minutes=15),
             )
             user.reset_failed_logins()
 
@@ -154,9 +160,7 @@ class TestUserModel:
     def test_is_account_locked_true(self, app):
         """Test checking if account is locked (locked)."""
         with app.app_context():
-            user = UserFactory(
-                account_locked_until=datetime.utcnow() + timedelta(minutes=10)
-            )
+            user = UserFactory(account_locked_until=datetime.utcnow() + timedelta(minutes=10))
 
             assert user.is_account_locked() is True
 
@@ -170,9 +174,7 @@ class TestUserModel:
     def test_is_account_locked_expired(self, app):
         """Test checking if account is locked (lock expired)."""
         with app.app_context():
-            user = UserFactory(
-                account_locked_until=datetime.utcnow() - timedelta(minutes=10)
-            )
+            user = UserFactory(account_locked_until=datetime.utcnow() - timedelta(minutes=10))
 
             assert user.is_account_locked() is False
 
@@ -195,9 +197,9 @@ class TestUserModel:
             user = UserFactory()
             stats = user.get_stats()
 
-            assert stats['total_attempts'] == 0
-            assert stats['average_score'] == 0
-            assert stats['best_score'] == 0
+            assert stats["total_attempts"] == 0
+            assert stats["average_score"] == 0
+            assert stats["best_score"] == 0
 
     def test_get_stats_with_attempts(self, app):
         """Test getting user stats with completed attempts."""
@@ -207,17 +209,13 @@ class TestUserModel:
 
             # Create 3 completed attempts
             for score in [7, 8, 9]:
-                attempt = AttemptFactory.create_completed(
-                    user=user,
-                    quiz=quiz,
-                    score=score
-                )
+                _ = AttemptFactory.create_completed(user=user, quiz=quiz, score=score)
 
             stats = user.get_stats()
 
-            assert stats['total_attempts'] == 3
-            assert stats['average_score'] == 80.0  # (70 + 80 + 90) / 3
-            assert stats['best_score'] == 90.0
+            assert stats["total_attempts"] == 3
+            assert stats["average_score"] == 80.0  # (70 + 80 + 90) / 3
+            assert stats["best_score"] == 90.0
 
     def test_user_relationship_with_attempts(self, app):
         """Test User -> Attempt relationship."""
@@ -271,11 +269,7 @@ class TestQuizModel:
 
             # Create 3 completed attempts
             for score in [6, 8, 10]:
-                AttemptFactory.create_completed(
-                    user=user,
-                    quiz=quiz,
-                    score=score
-                )
+                AttemptFactory.create_completed(user=user, quiz=quiz, score=score)
 
             avg_score = quiz.get_average_score()
             assert avg_score == 80.0  # (60 + 80 + 100) / 3
@@ -320,11 +314,11 @@ class TestQuizModel:
             quiz = QuizFactory()
             quiz_dict = quiz.to_dict()
 
-            assert quiz_dict['id'] == quiz.id
-            assert quiz_dict['category'] == quiz.category
-            assert quiz_dict['description'] == quiz.description
-            assert quiz_dict['total_questions'] == quiz.total_questions
-            assert 'created_at' in quiz_dict
+            assert quiz_dict["id"] == quiz.id
+            assert quiz_dict["category"] == quiz.category
+            assert quiz_dict["description"] == quiz.description
+            assert quiz_dict["total_questions"] == quiz.total_questions
+            assert "created_at" in quiz_dict
 
 
 @pytest.mark.unit
@@ -340,20 +334,16 @@ class TestQuestionModel:
             assert question.id is not None
             assert question.question is not None
             assert question.correct_answer in [0, 1, 2, 3]
-            assert question.difficulty in ['easy', 'medium', 'hard']
+            assert question.difficulty in ["easy", "medium", "hard"]
 
     def test_get_correct_option_text(self, app):
         """Test getting correct option text."""
         with app.app_context():
             question = QuestionFactory(
-                option_1='A',
-                option_2='B',
-                option_3='C',
-                option_4='D',
-                correct_answer=2
+                option_1="A", option_2="B", option_3="C", option_4="D", correct_answer=2
             )
 
-            assert question.get_correct_option_text() == 'C'
+            assert question.get_correct_option_text() == "C"
 
     def test_check_answer_correct(self, app):
         """Test checking correct answer."""
@@ -372,21 +362,21 @@ class TestQuestionModel:
     def test_get_difficulty_weight_easy(self, app):
         """Test difficulty weight for easy questions."""
         with app.app_context():
-            question = QuestionFactory(difficulty='easy')
+            question = QuestionFactory(difficulty="easy")
 
             assert question.get_difficulty_weight() == 1
 
     def test_get_difficulty_weight_medium(self, app):
         """Test difficulty weight for medium questions."""
         with app.app_context():
-            question = QuestionFactory(difficulty='medium')
+            question = QuestionFactory(difficulty="medium")
 
             assert question.get_difficulty_weight() == 2
 
     def test_get_difficulty_weight_hard(self, app):
         """Test difficulty weight for hard questions."""
         with app.app_context():
-            question = QuestionFactory(difficulty='hard')
+            question = QuestionFactory(difficulty="hard")
 
             assert question.get_difficulty_weight() == 3
 
@@ -396,10 +386,10 @@ class TestQuestionModel:
             question = QuestionFactory()
             question_dict = question.to_dict()
 
-            assert question_dict['id'] == question.id
-            assert question_dict['question'] == question.question
-            assert 'options' in question_dict
-            assert len(question_dict['options']) == 4
+            assert question_dict["id"] == question.id
+            assert question_dict["question"] == question.question
+            assert "options" in question_dict
+            assert len(question_dict["options"]) == 4
 
 
 @pytest.mark.unit
@@ -437,14 +427,14 @@ class TestAttemptModel:
         with app.app_context():
             attempt = AttemptFactory.create_completed(time_taken=125)
 
-            assert attempt.get_formatted_duration() == '2m 5s'
+            assert attempt.get_formatted_duration() == "2m 5s"
 
     def test_get_formatted_duration_in_progress(self, app):
         """Test formatted duration for in-progress attempt."""
         with app.app_context():
             attempt = AttemptFactory.create_in_progress()
 
-            assert attempt.get_formatted_duration() == 'In Progress'
+            assert attempt.get_formatted_duration() == "In Progress"
 
     def test_get_formatted_date_completed(self, app):
         """Test formatted date for completed attempt."""
@@ -452,7 +442,7 @@ class TestAttemptModel:
             attempt = AttemptFactory.create_completed()
 
             formatted_date = attempt.get_formatted_date()
-            assert formatted_date != 'In Progress'
+            assert formatted_date != "In Progress"
             assert len(formatted_date) > 0
 
     def test_get_formatted_date_in_progress(self, app):
@@ -460,7 +450,7 @@ class TestAttemptModel:
         with app.app_context():
             attempt = AttemptFactory.create_in_progress()
 
-            assert attempt.get_formatted_date() == 'In Progress'
+            assert attempt.get_formatted_date() == "In Progress"
 
     def test_get_performance_message_excellent(self, app):
         """Test performance message for excellent score (90%+)."""
@@ -468,7 +458,7 @@ class TestAttemptModel:
             attempt = AttemptFactory.create_completed(score=9)
 
             message = attempt.get_performance_message()
-            assert 'Excellent' in message or 'Outstanding' in message
+            assert "Excellent" in message or "Outstanding" in message
 
     def test_get_performance_message_good(self, app):
         """Test performance message for good score (70-89%)."""
@@ -476,7 +466,7 @@ class TestAttemptModel:
             attempt = AttemptFactory.create_completed(score=7)
 
             message = attempt.get_performance_message()
-            assert 'Good' in message or 'Well done' in message
+            assert "Good" in message or "Well done" in message
 
     def test_get_performance_message_pass(self, app):
         """Test performance message for passing score (50-69%)."""
@@ -484,7 +474,7 @@ class TestAttemptModel:
             attempt = AttemptFactory.create_completed(score=5)
 
             message = attempt.get_performance_message()
-            assert 'Pass' in message or 'passed' in message.lower()
+            assert "Pass" in message or "passed" in message.lower()
 
     def test_get_performance_message_fail(self, app):
         """Test performance message for failing score (<50%)."""
@@ -492,7 +482,7 @@ class TestAttemptModel:
             attempt = AttemptFactory.create_completed(score=3)
 
             message = attempt.get_performance_message()
-            assert 'study' in message.lower() or 'review' in message.lower()
+            assert "study" in message.lower() or "review" in message.lower()
 
 
 @pytest.mark.unit
@@ -512,39 +502,27 @@ class TestUserAnswerModel:
     def test_get_selected_option_text(self, app):
         """Test getting selected option text."""
         with app.app_context():
-            question = QuestionFactory(
-                option_1='A',
-                option_2='B',
-                option_3='C',
-                option_4='D'
-            )
+            question = QuestionFactory(option_1="A", option_2="B", option_3="C", option_4="D")
             answer = UserAnswerFactory(question=question, selected_answer=1)
 
-            assert answer.get_selected_option_text() == 'B'
+            assert answer.get_selected_option_text() == "B"
 
     def test_get_correct_option_text(self, app):
         """Test getting correct option text."""
         with app.app_context():
             question = QuestionFactory(
-                option_1='A',
-                option_2='B',
-                option_3='C',
-                option_4='D',
-                correct_answer=2
+                option_1="A", option_2="B", option_3="C", option_4="D", correct_answer=2
             )
             answer = UserAnswerFactory(question=question)
 
-            assert answer.get_correct_option_text() == 'C'
+            assert answer.get_correct_option_text() == "C"
 
     def test_create_correct_answer(self, app):
         """Test factory method for correct answer."""
         with app.app_context():
             question = QuestionFactory(correct_answer=1)
             attempt = AttemptFactory.create_in_progress()
-            answer = UserAnswerFactory.create_correct(
-                question=question,
-                attempt=attempt
-            )
+            answer = UserAnswerFactory.create_correct(question=question, attempt=attempt)
 
             assert answer.selected_answer == question.correct_answer
             assert answer.is_correct is True
@@ -554,10 +532,7 @@ class TestUserAnswerModel:
         with app.app_context():
             question = QuestionFactory(correct_answer=1)
             attempt = AttemptFactory.create_in_progress()
-            answer = UserAnswerFactory.create_incorrect(
-                question=question,
-                attempt=attempt
-            )
+            answer = UserAnswerFactory.create_incorrect(question=question, attempt=attempt)
 
             assert answer.selected_answer != question.correct_answer
             assert answer.is_correct is False
