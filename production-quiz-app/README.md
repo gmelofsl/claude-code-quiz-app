@@ -303,10 +303,100 @@ Use specialized agents during development:
 /quiz-content-agent [task description]
 ```
 
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+
+### Core Documentation
+
+- **[API Documentation](docs/API.md)** - Complete API reference with examples
+  - Authentication endpoints (register, login, email verification, password reset)
+  - Quiz endpoints (dashboard, start quiz, submit answers)
+  - Request/response formats and error codes
+  - Rate limiting and security details
+  - Code examples (Python, JavaScript, cURL)
+
+- **[Architecture Documentation](docs/ARCHITECTURE.md)** - System design and patterns
+  - High-level architecture diagram
+  - Technology stack overview
+  - Application layers (Presentation, Business Logic, Data Access)
+  - Database schema with ERD
+  - Security architecture and authentication flow
+  - Caching strategy and performance considerations
+  - Design patterns used throughout the app
+
+- **[Development Guide](docs/DEVELOPMENT.md)** - Developer workflow and standards
+  - Quick start instructions
+  - Coding standards (PEP 8, Black, isort)
+  - Testing guide with examples
+  - Database migration commands
+  - Debugging tips and Flask shell usage
+  - Useful development commands
+
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Production deployment instructions
+  - Docker deployment (recommended approach)
+  - Manual deployment with systemd
+  - Cloud platforms (AWS, Heroku, DigitalOcean, GCP)
+  - Database migration strategies
+  - Monitoring and troubleshooting
+  - Security checklist and backup strategies
+
+- **[Contributing Guide](docs/CONTRIBUTING.md)** - How to contribute
+  - Code of Conduct
+  - Development workflow and branching strategy
+  - Coding standards and style guide
+  - Testing requirements (80%+ coverage)
+  - Commit message conventions
+  - Pull request process
+  - Issue guidelines
+
+### Additional Documentation
+
+- **[Linting Guide](LINTING.md)** - Code quality and formatting
+  - Black, isort, Flake8, Bandit, mypy setup
+  - Pre-commit hooks configuration
+  - IDE integration guides
+  - Troubleshooting common issues
+
+- **[CI/CD Documentation](CICD.md)** - Continuous integration and deployment
+  - GitHub Actions workflows
+  - Pipeline stages and jobs
+  - Automated testing and deployment
+  - Troubleshooting CI/CD issues
+
+- **[Quick Start Guide](.github/CICD-QUICK-START.md)** - CI/CD setup
+  - GitHub Secrets configuration
+  - Branch protection setup
+  - Badge URL updates
+
+### Getting Started
+
+New to the project? Start here:
+
+1. Read the [Development Guide](docs/DEVELOPMENT.md) for setup instructions
+2. Review the [Architecture Documentation](docs/ARCHITECTURE.md) to understand the system
+3. Check the [Contributing Guide](docs/CONTRIBUTING.md) before making changes
+4. Refer to the [API Documentation](docs/API.md) when working with endpoints
+
 ## License
 
 [Your License Here]
 
 ## Contributing
 
-[Contributing Guidelines]
+We welcome contributions! Please read our [Contributing Guide](docs/CONTRIBUTING.md) for details on:
+
+- Code of Conduct
+- Development workflow and branching strategy
+- Coding standards and testing requirements
+- How to submit pull requests
+- Issue reporting guidelines
+
+Before submitting a PR, ensure:
+- All tests pass (`pytest`)
+- Code is formatted (`black`, `isort`)
+- Linting passes (`flake8`)
+- Coverage meets requirements (80%+)
+- Documentation is updated
+
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for complete guidelines.
